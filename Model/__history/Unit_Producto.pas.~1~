@@ -1,0 +1,264 @@
+unit Unit_warrants;
+
+interface
+uses Unit_BasedeDatos,Controls,DB,Classes,Provider,DBClient,StrUtils, dbtables, adodb;
+
+type  Twarrants=class
+      private
+      public
+        constructor Create;
+        destructor Destroy;
+        function ingresowarrants(CLIENTE:INTEGER;INGENIO:INTEGER;PRODUCTO:INTEGER;CANTIDAD:integer;ESTIBA:string;
+                                 prefijo:integer;numero:integer;VENCE:STRING;WARRANTS:INTEGER;TRANSPORTE:string;
+                                 ordencarga:integer;chofer:string;dni:string;chasis:string;acoplado:string;destent:string;
+                                 observacion:TStrings):integer;
+        function ingresoclientes(nombre:string;cuit:string):integer;
+        procedure eliminarclientes(idclientes:integer);
+        procedure modicliente(idclientes:integer;descripcion:string;cuit:string);
+        function ingresoingenios(nombre:string):integer;
+        procedure eliminaringenios(idingenios:integer);
+        procedure ingresoPRODUCTOS(nombre:string;CODIGO:string);
+        procedure eliminarproductos(idproductos:integer);
+        function salidawarrants(CLIENTE:INTEGER;INGENIO:INTEGER;PRODUCTO:INTEGER;CANTIDAD:integer;ESTIBA:string;
+                                 WARRANTS:INTEGER;TRANSPORTE:String;ordencarga:integer;chofer:string;dni:string;
+                                  chasis:string;acoplado:string;destent:string;
+                                  observacion:TStrings):integer;
+        procedure eliminarmovimientos(idmovimientos:integer);
+        procedure modiingresos(idmovimientos:integer;estiba:string;vence:tdate;warrants:integer;
+                               transporte:String;ordencarga:integer;chofer:string);
+end;
+
+implementation
+
+uses SysUtils,Unit_Seguridad;
+
+Constructor Twarrants.Create;
+begin
+  inherited Create;
+end;
+
+destructor Twarrants.Destroy;
+begin
+  inherited Destroy;
+end;
+
+procedure Twarrants.modiingresos(idmovimientos:integer;estiba:string;vence:tdate;warrants:integer;
+                               transporte:String;ordencarga:integer;chofer:string);
+var sql:string;
+begin
+  sql:='update movimientos set estiba='+QuotedStr(estiba)+',vence='+QuotedStr(formatdatetime('YYYY-MM-DD',vence))+',warrants='
+      +IntToStr(warrants)+',transporte='+QuotedStr(transporte)+',ordencarga='+IntToStr(ordencarga)+',chofer='+QuotedStr(chofer)
+      +',fechamodi=now(),idusuariomodi='+IntToStr(ControldeSeguridad.IDUsuario)
+      +' where idmovimientos='+IntToStr(idmovimientos);
+
+  ConexionDB.EjecutarAct(sql);
+end;
+
+procedure Twarrants.eliminarmovimientos(idmovimientos:integer);
+var sql:TStringList;
+    movidataset:tdataset;
+begin
+  movidataset:=ConexionDB.EjecutarSelect('select idmovimientos,cantidad,idproductos from movimientos where idmovimientos='+IntToStr(idmovimientos),false);
+  sql:=TStringList.Create();
+  sql.Add(' update productos set stock=stock-('+movidataset.fieldbyname('cantidad').AsString+') where idproductos='
+          +movidataset.fieldbyname('idproductos').AsString);
+  sql.Add(' update movimientos set anulado=1 where idmovimientos='+movidataset.fieldbyname('idmovimientos').AsString);
+  ConexionDB.EjecutarAct(sql);
+  sql.Free;
+end;
+
+procedure Twarrants.eliminarproductos(idproductos:integer);
+var sql:string;
+begin
+  sql:=' update productos set eliminado=1,idusuariomodi='+IntToStr(ControldeSeguridad.IDUsuario)+',fechamodi=now()'
+      +' where idproductos='+IntToStr(idproductos);
+  ConexionDB.EjecutarAct(sql);
+end;
+
+procedure Twarrants.ingresoproductos(nombre:string;codigo:string);
+var sql:TStringList;
+begin
+  sql:=TStringList.Create();
+  sql.Add(' insert into productos (idproductos,descripcion,codigo,idusuarioalta,fechaalta) values ('
+         +'null,'
+         +QuotedStr(nombre)+','
+         +(CODIGO)+','
+         +IntToStr(ControldeSeguridad.IDUsuario)+','
+         +'now()'
+         +');'
+         );
+
+  ConexionDB.EjecutarAct(sql);
+  sql.Free;
+end;
+
+procedure Twarrants.eliminaringenios(idingenios:integer);
+var sql:string;
+begin
+  sql:=' update ingenios set eliminado=1,idusuariomodi='+IntToStr(ControldeSeguridad.IDUsuario)+',fechamodi=now()'
+      +' where idingenios='+IntToStr(idingenios);
+  ConexionDB.EjecutarAct(sql);
+end;
+
+procedure Twarrants.eliminarclientes(idclientes:integer);
+var sql:string;
+begin
+  sql:=' update clientes set eliminado=1,idusuariomodi='+IntToStr(ControldeSeguridad.IDUsuario)+',fechamodi=now()'
+      +' where idclientes='+IntToStr(idclientes);
+  ConexionDB.EjecutarAct(sql);
+end;
+
+procedure  Twarrants.modicliente(idclientes:integer;descripcion:string;cuit:string);
+var sql:string;
+begin
+  sql:='update clientes set descripcion='+QuotedStr(descripcion)+',cuit='+QuotedStr(cuit)
+      +' where idclientes='+IntToStr(idclientes);
+  ConexionDB.EjecutarAct(sql);     
+end;
+
+function Twarrants.ingresoingenios(nombre:string):integer;
+var sql:TStringList;
+    idingenios:integer;
+begin
+  sql:=TStringList.Create();
+  sql.Add(' insert into ingenios (idingenios,descripcion,idusuarioalta,fechaalta) values ('
+         +'null,'
+         +QuotedStr(nombre)+','
+         +IntToStr(ControldeSeguridad.IDUsuario)+','
+         +'now()'
+         +');'
+         );
+
+  ConexionDB.EjecutarAct(sql);
+  with ConexionDB.EjecutarSelect('SELECT MAX(idingenios) AS MAXIMO FROM ingenios',false) do
+    begin
+      idingenios:=FieldByName('MAXIMO').AsInteger;
+    end;
+  sql.Free;
+  Result:=idingenios;
+end;
+
+function Twarrants.ingresoclientes(nombre:string;cuit:string):integer;
+var sql:TStringList;
+    idclientes:integer;
+begin
+  sql:=TStringList.Create();
+  sql.Add(' insert into clientes (idclientes,descripcion,cuit,idusuarioalta,fechaalta) values ('
+         +'null,'
+         +QuotedStr(nombre)+','
+         +QuotedStr(cuit)+','
+         +IntToStr(ControldeSeguridad.IDUsuario)+','
+         +'now()'
+         +');'
+         );
+
+  ConexionDB.EjecutarAct(sql);
+  with ConexionDB.EjecutarSelect('SELECT MAX(idclientes) AS MAXIMO FROM clientes',false) do
+    begin
+      idclientes:=FieldByName('MAXIMO').AsInteger;
+    end;
+  sql.Free;
+  Result:=idclientes;
+end;
+
+function Twarrants.ingresowarrants(CLIENTE:INTEGER;INGENIO:INTEGER;PRODUCTO:INTEGER;CANTIDAD:integer;ESTIBA:string;
+                                 prefijo:integer;numero:integer;VENCE:STRING;WARRANTS:INTEGER;TRANSPORTE:string;
+                                 ordencarga:integer;chofer:string;dni:string;chasis:string;acoplado:string;destent:string;
+                                 observacion:TStrings):integer;
+var sql:TStringList;
+    idmovimientos:integer;
+begin
+  sql:=TStringList.Create();
+
+  sql.Add(' insert into movimientos (idmovimientos,idclientes,idingenios,idproductos,cantidad,estiba,idusuarioalta'
+         +' ,fechaalta,PREFIJO,NUMERO,VENCE,WARRANTS,SENTIDO,TRANSPORTE,ordencarga,chofer,dni,chasis,acoplado,destinoent,observacion)'
+         +' values ('
+         +' null,'
+         +IntToStr(CLIENTE)+','
+         +IntToStr(INGENIO)+','
+         +IntToStr(PRODUCTO)+','
+         +IntToStr(CANTIDAD)+','
+         +QuotedStr(ESTIBA)+','
+         +IntToStr(ControldeSeguridad.IDUsuario)+','
+         +'now(),'
+         +IntToStr(prefijo)+','
+         +IntToStr(numero)+','
+         +QuotedStr(VENCE)+','
+         +IntToStr(WARRANTS)+','
+         +'"I",'
+         +QuotedStr(TRANSPORTE)+','
+         +IntToStr(ordencarga)+','
+         +QuotedStr(chofer)+','
+         +QuotedStr(dni)+','
+         +QuotedStr(chasis)+','
+         +QuotedStr(acoplado)+','
+         +QuotedStr(destent)+','
+         +QuotedStr(TrimRight(TrimRight(observacion.Text)))
+         +');'
+         );
+  sql.Add(' update productos set STOCK=STOCK+'+IntToStr(CANTIDAD)+' where idproductos='+IntToStr(PRODUCTO)+';');
+
+  ConexionDB.EjecutarAct(sql);
+  with ConexionDB.EjecutarSelect('SELECT MAX(idmovimientos) AS MAXIMO FROM movimientos',false) do
+    begin
+      idmovimientos:=FieldByName('MAXIMO').AsInteger;
+    end;
+  sql.Free;
+  Result:=Idmovimientos;
+end;
+
+function Twarrants.salidawarrants(CLIENTE:INTEGER;INGENIO:INTEGER;PRODUCTO:INTEGER;CANTIDAD:integer;ESTIBA:String;
+                                  WARRANTS:INTEGER;TRANSPORTE:String;ordencarga:integer;chofer:string;dni:string;
+                                  chasis:string;acoplado:string;destent:string;
+                                  observacion:TStrings):integer;
+var sql:TStringList;
+    numero:integer;
+begin
+  sql:=TStringList.Create();
+  SQL.Add('SELECT @PREFIJO:=PREFIJO,@NUMERO:=NUMERO FROM NUMERACIONCOMPROBANTES'
+            +' WHERE TIPO=1  FOR UPDATE');
+  SQL.Add('UPDATE NUMERACIONCOMPROBANTES SET NUMERO=NUMERO+1 '
+            +'WHERE TIPO=1');
+
+  ConexionDB.EjecutarAct(sql);
+   with ConexionDB.EjecutarSelect('SELECT @NUMERO',false) do
+    begin
+      numero:=FieldByName('@NUMERO').AsInteger;
+      Free;
+    end;
+
+  sql.Clear;
+
+  sql.Add(' insert into movimientos (idmovimientos,idclientes,idingenios,idproductos,cantidad,estiba,idusuarioalta'
+         +' ,fechaalta,PREFIJO,NUMERO,WARRANTS,SENTIDO,TRANSPORTE,ordencarga,chofer,dni,chasis,acoplado,destinoent,observacion)'
+         +' values ('
+         +' null,'
+         +IntToStr(CLIENTE)+','
+         +IntToStr(INGENIO)+','
+         +IntToStr(PRODUCTO)+','
+         +IntToStr(CANTIDAD*-1)+','
+         +QuotedStr(ESTIBA)+','
+         +IntToStr(ControldeSeguridad.IDUsuario)+','
+         +'now(),'
+         +'@PREFIJO,'
+         +'@NUMERO,'
+         +IntToStr(WARRANTS)+','
+         +'"E",'
+         +QuotedStr(TRANSPORTE)+','
+         +IntToStr(ordencarga)+','
+         +QuotedStr(chofer)+','
+         +QuotedStr(dni)+','
+         +QuotedStr(chasis)+','
+         +QuotedStr(acoplado)+','
+         +QuotedStr(destent)+','
+         +QuotedStr(TrimRight(TrimRight(observacion.Text)))
+         +');'
+         );
+  sql.Add(' update productos set STOCK=STOCK-'+IntToStr(CANTIDAD)+' where idproductos='+IntToStr(PRODUCTO));
+
+  ConexionDB.EjecutarAct(sql);
+  sql.Free;
+  Result:=numero;
+end;
+
+end.

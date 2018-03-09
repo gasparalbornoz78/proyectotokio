@@ -1,0 +1,46 @@
+unit views.OrdedeCompraListado;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Data.DB,
+  Vcl.Grids, Vcl.DBGrids;
+
+type
+  TForm2 = class(TForm)
+    Panel1: TPanel;
+    Label1: TLabel;
+    Edit1: TEdit;
+    Panel2: TPanel;
+    GroupBox1: TGroupBox;
+    Splitter1: TSplitter;
+    GroupBox2: TGroupBox;
+    DBGridCabecera: TDBGrid;
+    DBGridDetalle: TDBGrid;
+    DSCabecera: TDataSource;
+    DSDetalle: TDataSource;
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  Form2: TForm2;
+
+implementation
+uses Unit_BasedeDatos;
+{$R *.dfm}
+
+procedure TForm2.Button1Click(Sender: TObject);
+begin
+  with ConexionDB do
+    begin
+      EjecutarSelect('SELECT * FROM ordendecompra',DSCabecera);;
+    end;
+end;
+
+end.

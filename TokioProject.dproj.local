@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2018/02/09 15:26:42.000.390,=C:\Users\COMPUTOS\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/03/03 09:08:16.000.831,=C:\Users\COMPUTOS\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2018/03/03 09:12:19.000.140,C:\Users\COMPUTOS\Documents\Embarcadero\Studio\Projects\Unit1.pas=E:\proyectos\delphi\Tokio Project\Unit_FormPrincipal.pas</Transaction>
+    <Transaction>2018/03/03 09:12:19.000.140,C:\Users\COMPUTOS\Documents\Embarcadero\Studio\Projects\Unit1.dfm=E:\proyectos\delphi\Tokio Project\Unit_FormPrincipal.dfm</Transaction>
+    <Transaction>2018/03/03 09:12:29.000.527,C:\Users\COMPUTOS\Documents\Embarcadero\Studio\Projects\Project1.dproj=E:\proyectos\delphi\Tokio Project\TokioProject.dproj</Transaction>
+    <Transaction>2018/03/03 09:20:55.000.427,=E:\proyectos\delphi\Tokio Project\Model\Unit_Utilidades.pas</Transaction>
+    <Transaction>2018/03/03 09:20:55.000.412,=E:\proyectos\delphi\Tokio Project\Model\Unit_BasedeDatos.pas</Transaction>
+    <Transaction>2018/03/03 09:20:55.000.418,=E:\proyectos\delphi\Tokio Project\Model\Unit_ConstantesGenerales.pas</Transaction>
+    <Transaction>2018/03/03 09:21:11.000.115,=E:\proyectos\delphi\Tokio Project\GUIUtilidades\Unit_FormBuscarPorDescripcion.pas</Transaction>
+    <Transaction>2018/03/03 09:21:50.000.604,=E:\proyectos\delphi\Tokio Project\Service\OrdendeCompra\Service.OrdendeCompra.pas</Transaction>
+    <Transaction>2018/03/03 09:22:04.000.972,=E:\proyectos\delphi\Tokio Project\Service\transferenciaarchivos\json\Utilidades.JSONDataset.pas</Transaction>
+    <Transaction>2018/03/03 09:23:48.000.878,E:\proyectos\delphi\Tokio Project\Service\OrdendeCompra\Service.OrdendeCompra.pas=</Transaction>
+    <Transaction>2018/03/03 09:24:16.000.417,E:\proyectos\delphi\Tokio Project\GUIUtilidades\Unit_FormBuscarPorDescripcion.pas=</Transaction>
+    <Transaction>2018/03/03 09:25:01.000.929,E:\proyectos\delphi\Tokio Project\Model\Unit_Utilidades.pas=</Transaction>
+    <Transaction>2018/03/03 09:25:23.000.691,E:\proyectos\delphi\Tokio Project\Model\Unit_BasedeDatos.pas=</Transaction>
+    <Transaction>2018/03/03 09:25:41.000.141,=E:\proyectos\delphi\Tokio Project\Model\Unit_BasedeDatos.pas</Transaction>
+    <Transaction>2018/03/03 09:30:40.000.838,=E:\proyectos\delphi\Tokio Project\GUIUtilidades\Unit_FormBuscarPorDescripcion.pas</Transaction>
+    <Transaction>2018/03/03 09:31:03.000.205,=E:\proyectos\delphi\Tokio Project\Model\Unit_Utilidades.pas</Transaction>
+    <Transaction>2018/03/03 09:31:08.000.798,=E:\proyectos\delphi\Tokio Project\Service\OrdendeCompra\Service.OrdendeCompra.pas</Transaction>
+    <Transaction>2018/03/03 09:31:24.000.347,=E:\proyectos\delphi\Tokio Project\Views\OrdendeCompra\Unit_OrdendeCompraAlta.pas</Transaction>
+    <Transaction>2018/03/07 17:22:20.000.422,=E:\proyectos\delphi\Tokio Project\Unit1.pas</Transaction>
+    <Transaction>2018/03/07 17:22:32.000.492,=E:\proyectos\delphi\Tokio Project\Unit1.pas</Transaction>
+    <Transaction>2018/03/07 17:23:29.000.748,=E:\proyectos\delphi\Tokio Project\Unit2.pas</Transaction>
+    <Transaction>2018/03/07 17:25:57.000.377,E:\proyectos\delphi\Tokio Project\Views\OrdendeCompra\views.OrdedeCompraListado.pas=E:\proyectos\delphi\Tokio Project\Unit2.pas</Transaction>
+    <Transaction>2018/03/07 17:25:57.000.377,E:\proyectos\delphi\Tokio Project\Views\OrdendeCompra\views.OrdedeCompraListado.dfm=E:\proyectos\delphi\Tokio Project\Unit2.dfm</Transaction>
+    <Transaction>2018/03/07 18:24:45.000.187,E:\proyectos\delphi\Tokio Project\Views\OrdendeCompra\views.FormOrdendeCompraListado.pas=E:\proyectos\delphi\Tokio Project\Views\OrdendeCompra\views.OrdedeCompraListado.pas</Transaction>
+    <Transaction>2018/03/07 18:24:45.000.187,E:\proyectos\delphi\Tokio Project\Views\OrdendeCompra\views.FormOrdendeCompraListado.dfm=E:\proyectos\delphi\Tokio Project\Views\OrdendeCompra\views.OrdedeCompraListado.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

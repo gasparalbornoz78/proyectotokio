@@ -1,0 +1,109 @@
+unit JSONDataset;
+
+interface
+
+uses
+    System.JSON, FireDAC.Comp.Client, System.SysUtils,Data.DB
+    ,System.Classes;
+
+type
+  TJSONDataSet = class
+      private
+        RawString  : TBytes;
+        DatosArray : TJSONArray;
+        DataSet : TFDMemTable;
+        function GetDataSet:TDataSet;
+        procedure SetDataSet(Source:TDataSet);
+      protected
+
+      public
+         constructor Create;
+         destructor Destroy;
+
+         property DataSetJson:TDataSet read GetDataSet  write SetDataSet;
+
+         procedure GenerarArchivo(Path:string;FileName:string);
+         procedure CargarDataset;
+         procedure CargarArchivoJSON;
+
+
+  end;
+
+implementation
+
+constructor TJSONDataSet.Create;
+begin
+  inherited Create;
+  self.DataSet:=TFDMemTable.Create(nil);
+
+
+end;
+
+destructor TJSONDataSet.Destroy;
+begin
+  self.DataSet.Free;
+  self.DatosArray.Free;
+  inherited Destroy;
+end;
+
+procedure TJSONDataSet.generarArchivo(Path:string;FileName:string);
+  var
+      Campos: TStrings;
+      I:integer;
+      JSONObject : TJSONObject;
+      JSONArray : TJSONArray;
+      StringListFile : TStringList;
+begin
+
+  JSONArray:=TJSONArray.Create;
+
+  with DataSet do
+    begin
+      Fields.GetFieldNames(Campos);
+      First;
+      while not Eof do
+        begin
+          JSONObject := TJSONObject.Create;
+          for I := 0 to Campos.Count-1 do
+            begin
+              JSONObject.AddPair(Campos[I],FieldByName(Campos[I]).Value)
+            end;
+          JSONArray.AddElement(JSONObject);
+          Next;
+        end;
+    end;
+
+    StringListFile.Text := JSONArray.ToJSON;
+
+end;
+
+
+
+
+procedure TJSONDataSet.CargarDataset;
+begin
+
+end;
+
+
+function TJSONDataset.GetDataSet:TDataSet;
+begin
+  Result:=DataSet;
+end;
+
+procedure TJSONDataSet.SetDataSet(Source:TDataSet);
+begin
+  self.DataSet:=Source as TFDMemTable;
+
+end;
+
+procedure TJSONDataSet.CargarArchivoJSON;
+begin
+    if DatosArray <> nil then
+      DatosArray.Free;
+    DatosArray:=TJSONArray.Create;
+
+end;
+
+
+end.

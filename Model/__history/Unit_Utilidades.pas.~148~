@@ -1,0 +1,1102 @@
+unit Unit_Utilidades;
+
+interface
+uses Unit_BasedeDatos,sysutils,classes,DB,Controls,Forms,Vcl.Dialogs,
+  ADODB,
+  Windows, Messages, Variants, Graphics,
+  DBClient, Provider, ImgList,
+  Menus,  ActnList,  Grids, DBGrids,
+  StdCtrls, ComCtrls,
+  Masks,IniFiles,
+  ExtCtrls,
+  CheckLst, Mask,Vcl.DBCtrls,
+  Shellapi,StrUtils,Unit_FormBuscarPorDescripcion;
+const
+    TablaMul:Array[1..10] of Integer=(5,4,3,2,7,6,5,4,3,2); {ESTO ES PARA VALIDACON DE CUIT}
+    ArchivoIni='Luque.ini';
+    CLASIFCOMERCIALTODOS=0;
+    //,1=reservado,2=ocupado,3=ingresado a rack sin etiquetar,4=etiquetado sin confirmar
+type
+  TDlgType=(dlgENTERO,dlgFLOTANTE,dlgSTRING);
+  TDynamicArrayString=array of string;
+  TGUIBuscarPorDescripcion = class
+      private
+        DataSetReceptor:TDataSet;
+        DataSetBusqueda:TDataSet;
+        WinControlReceptor: TWinControl;
+        CampoReceptor:String;
+        CampoClave: String;
+        StrSql:string;
+        FormBuscar:TFormBuscarPorDescripcion;
+        procedure PrepararDataSetConsulta(StrFiltro_par:string);
+        procedure EventoKeyPressFiltro(Sender: TObject; var Key: Char);
+        procedure EventoKeyDownFiltro(Sender: TObject; var Key: Word; Shift: TShiftState);
+        procedure EventoKeyDownDBEditReceptor(Sender: TObject; var Key: Word; Shift: TShiftState);
+      public
+        constructor Create(DataSetReceptor_par:TDataSet;WinControlReceptor_par:TWinControl;CampoReceptor_par:string
+            ;CampoClave_par:string;StrSql_par:string);
+        destructor Destroy;
+        procedure MostrarBusqueda;
+
+  end;
+
+  TDirectoriosDBF=class
+    private
+      DIRECTORIOD:string;
+      ARCHIVOD:string;
+      ARCHIVOT:string;
+      ARCHIVOC:string;
+      IPD:string;
+      BASED:string;
+      procedure CargarDirectorios;
+    public
+      property DDIRECTORIO:string read DIRECTORIOD write DIRECTORIOD;
+      property DARCHIVO:string read ARCHIVOD write ARCHIVOD;
+      property TARCHIVO:string read ARCHIVOT write ARCHIVOT;
+      property CARCHIVO:string read ARCHIVOC write ARCHIVOC;
+      property DIP:string read IPD write IPD;
+      property DBASE:string read BASED write BASED;
+
+ end;
+
+
+
+{ TImpositivo=class
+    private
+      impIVA:real;
+      impIVAReducido:real;
+      impPECEPCIONIVA:real;
+      impPERCEPCIONIVAMONTOMAX:real;
+      procedure CargarVariablesImpositivas;
+    public
+      property IVA:real read impIVA write impIVA;
+      property IVAReducido:real read impIVAReducido write impIVAReducido;
+      property PercepcionIVA:real read impPECEPCIONIVA write impPECEPCIONIVA;
+      property PERCEPCIONIVAMONTOMAX:real read impPERCEPCIONIVAMONTOMAX write
+            impPERCEPCIONIVAMONTOMAX;
+ end;   }
+
+  TReporte=class
+    private
+      NOMBREC:string;DIRECCIONC:string;TELEFONOC:string;CUITC:string;
+      CONDICIONIVAC:string;INGRESOBRUTOC:string;INSCMUNICIPALC:string;
+      INICIOACTIVIDADESC:string;CAIC:string;FECHAVENCC:string;SUCURSALC:string;
+      DISTRIBUIDOR:string;
+      IVA:string;
+      PREFIJOREMITO:string;
+      CODIGOAFIPREMITO:string;
+      procedure CargarCabeceraReporte;
+    public
+      property CIVA:string read IVA;
+      property CPREFIJOREMITO:string read PREFIJOREMITO;
+      property CCODIGOAFIPREMITO:string read CODIGOAFIPREMITO;
+      property CNOMBRE:string read NOMBREC write NOMBREC;
+      property CDIRECCION:string read DIRECCIONC write DIRECCIONC;
+      property CTELEFONO:string read TELEFONOC write TELEFONOC;
+      property CCUIT:string read CUITC write CUITC;
+      property CCONDICIONIVA:string read CONDICIONIVAC write CONDICIONIVAC;
+      property CINGRESOBRUTO:string read INGRESOBRUTOC write INGRESOBRUTOC;
+      property CINSCMUNICIPAL:string read INSCMUNICIPALC write INSCMUNICIPALC;
+      property CINICIOACTIVIDADES:string read INICIOACTIVIDADESC write INICIOACTIVIDADESC;
+      property CCAI:string read CAIC write CAIC;
+      property CFECHAVENC:string read FECHAVENCC write FECHAVENCC;
+      property CSUCURSAL:string read SUCURSALC write SUCURSALC;
+      property CDISTRIBUIDOR:string read DISTRIBUIDOR write DISTRIBUIDOR;
+  end;
+
+
+
+ procedure CargarReporte(NumRep:integer;
+                        var NombreRep:string;
+                        var PathRep:string;
+                        var TituloRep:string;
+                        var SubTituloRep:string;
+                        var Observacion:String);
+// procedure LimpiarEdits(Contenedor:TForm);
+// function ValidarEdits(Contenedor:TForm):boolean;
+ procedure ObtenerCamposSQL(sql:string; aliasdecampos:TStringList);
+ procedure ConfigurarCampo(Campo:TField;FieldName:string;
+    FieldKind:TFieldKind;DataSet:TDataSet;ProviderFlags:TProviderFlags);
+ procedure Tokenizador (const S: String; Separador: Char; StringList: TStringList) ;
+ function EsCUITValido(Num:String):boolean;
+ function ExisteCuit(cuit:string):string;
+ procedure ConsultaGeneral(sql:string;AOwner:TComponent);overload;
+ function ConsultaGeneral(sql:string):TDataSet;overload;
+ procedure ArchivosSuc(dir, mascara: string;
+  var lista: TStrings; const soloNombres: boolean);
+ function RetornarSucursal:Integer;
+ function RetornarFechaActual:TDateTime;
+ function RetornarHora:String;
+ function DirectorioPedidosSucursales:string;
+ function DirRemitosIngresoSuc:string;
+ function IntToLetras(Valor:LongInt):String;
+ function IntToLetrasMil(Numero:LongInt):String;
+ function AlinearImporte(Numero:real;LenghtNum:integer):String;
+ function AlinearImporte4Digitos(Numero:real;LenghtNum:integer):String;
+ function AlinearNumero(Numero:LongInt;LenghtNum:integer):String;
+ function AlinearImporteDec(Numero:string;LenghtNum:integer):String;
+ function RellenarNumero(Numero:LongInt;LenghtNum:integer):String;
+ function RellenarImporteDec(Numero:real;LenghtNum:integer):String;
+ function RellenarNumeroDer(Numero:LongInt;LenghtNum:integer):String;
+ function RellenarImporteDecDer(Numero:real;LenghtNum:integer):String;
+ function DigitoVerificadorRemitoIngreso(NumeroProveedor:integer
+    ;NumeroRemito:integer
+    ;TotalDetalle:real):integer;
+ function ValidarRestriccion(CodigoProducto:integer; Idsucursal:integer; Idproceso:integer):boolean;
+
+ function ObtenerFechadeUltimoAccesoArchivo(Archivo:string):string;
+ function ObtenerFechadeModificacionArchivo(Archivo:string):string;
+ function ObtenerFechadeCreacionArchivo(Archivo:string):string;
+ function ObtenerFechaArchivo(PathArchivo: string): string;
+// procedure GuardarCDS(CDS:TClientDataSet;NombreArchivo:string;DirectorioInicial:string);
+// procedure CargarCDS(var CDS:TClientDataSet);
+ function ExtraerNumeroEnvioPrecios(TipoEnvio:integer):integer;
+var
+//     Impositivo:TImpositivo;
+     Reporte:TReporte;
+     CodigoSucursal:Integer;
+     NombreCasaCentral:string;
+     CodigoProveedorSucursal:integer;
+     CodigoClienteSucursal:integer;
+     NombreArchivoRemitoSalida:string;
+     LibroIVAActivo:string;
+     DelayEtiquetadora:integer;
+implementation
+
+
+var AplicationIni:TIniFile;
+
+//************* funciones para tokenizar************
+
+
+function GetNextToken(Const S: string;
+   Separator: char;
+   var StartPos: integer): String;
+var Index: integer;
+begin
+   Result := '';
+
+   While (S[StartPos] = Separator)
+   and (StartPos <= length(S))do
+    StartPos := StartPos + 1;
+
+   if StartPos > length(S) then Exit;
+
+{fija Index a StartPos}
+   Index := StartPos;
+
+{encuentra el siguiente separador}
+   While (S[Index] <> Separator)
+   and (Index <= length(S))do
+    Index := Index + 1;
+
+{copia el token a R}
+   Result := Copy(S, StartPos, Index - StartPos) ;
+
+{coloca SetStartPos al siguiente caracter luego del separador}
+   StartPos := Index + 1;
+end;
+
+procedure Tokenizador
+   (const S: String;
+   Separador: Char;
+   StringList: TStringList) ;
+var Start: integer;
+begin
+   Start := 1;
+   While Start <= Length(S) do
+     StringList.Add
+       (GetNextToken(S, Separador, Start)) ;
+end;
+
+function AddToken (const aToken, S: String;
+                    Separator: Char;
+                    StringLimit: integer): String;
+begin
+   if Length(aToken) + Length(S) < StringLimit then
+     begin
+        {agrega un separador siempre y cuando el resultado
+         del string sea distinto de vacío}
+       if S = '' then
+         Result := ''
+       else Result := S + Separator;
+
+       {agrega el toke}
+       Result := Result + aToken;
+     end
+   else
+   {si el StringLimit fuese excedido, levanta una
+    excepción
+   }
+     Raise Exception.Create('No se puede agregar el Token') ;
+end;
+
+//----------procedimientos para trabajar con cadena sql----
+
+procedure ObtenerCamposSQL(sql:string; aliasdecampos:TStringList);
+var sqltemp:string;
+    seccionselect:TStringList;
+    i:word;
+//Pos(Substr: string; S: string)
+//function Copy(S; Index, Count: Integer): string
+//procedure Delete(var S: string; Index, Count:Integer);
+begin          //Ejemplo de desglose:
+               //SELECT A.SUC AS CODIGO,A.DETALLE AS Sucursal FROM TABLA
+  seccionselect:=TStringList.Create;
+  sql:=UPPERCASE(sql);
+  sqltemp:=Copy(sql,Pos('SELECT',sql)+Length('SELECT')+1,
+          Pos('FROM',sql)-1-Pos('SELECT',sql)-Length('SELECT')-1);
+    //---- aqui obtengo A.SUC AS CODIGO,A.DETALLE AS Sucursal separados en
+    // el stringlist seccionselect
+  Tokenizador(sqltemp,',',SeccionSelect);
+  for i:=0 to Seccionselect.Count-1 do
+    begin
+      aliasdecampos.Add(
+             StringReplace
+               ( Copy(SeccionSelect[i]
+                    ,Pos(' AS ',SeccionSelect[i])+5
+                    ,Length(SeccionSelect[i])-Pos(' AS ',SeccionSelect[i])-5
+               ),'"','',[rfReplaceAll])
+          );
+    end;
+end;
+
+//-----------procedimientos que interactuan con controles visuales------
+
+{function ValidarEdits(Contenedor:TForm):boolean;
+var i:integer;
+    wincontrol:TWinControl;
+    resultado:boolean;
+    componente:string;
+begin
+  wincontrol:=nil;
+  resultado:=false;
+  with Contenedor do
+    for i:=0 to ComponentCount-1 do
+      begin
+       if Components[i].Tag=0 then
+          begin
+            if Components[i] is TEdit then
+                 if Trim(TEdit(Components[i]).Text)='' then
+                    wincontrol:=TEdit(Components[i]);
+            if Components[i] is TComboBox then
+                 if Trim(TComboBox(Components[i]).Text)='' then
+                    wincontrol:=TComboBox(Components[i]);
+            if Components[i] is TJvHTComboBox then
+                 if Trim(TJvHTComboBox(Components[i]).Text)='' then
+                    wincontrol:=TJvHTComboBox(Components[i]);
+            if Components[i] is TJvComboBox then
+                 if Trim(TJvHTComboBox(Components[i]).Text)='' then
+                    wincontrol:=TJvComboBox(Components[i]);
+            if Components[i] is TJvValidateEdit then
+                 if Trim(TJvValidateEdit(Components[i]).Text)='' then
+                    wincontrol:=TJvValidateEdit(Components[i]);
+
+
+            if wincontrol<>nil then
+               if wincontrol.Visible then
+                  break
+               else
+                  wincontrol:=nil;
+          end;
+      end;
+
+     if wincontrol<>nil then
+     begin
+       if not wincontrol.Parent.Visible then
+         begin
+          wincontrol.Parent.Visible:=true;
+          wincontrol.Parent.SetFocus;
+         end;
+       wincontrol.Parent.Parent.Show;
+       wincontrol.Parent.Parent.SetFocus;
+       wincontrol.Parent.Show;
+       wincontrol.Parent.SetFocus;
+       wincontrol.SetFocus;
+       resultado:=true;
+     end;
+Result:=resultado;
+end;   }
+{procedure LimpiarEdits(Contenedor:TForm);
+var i:integer;
+begin
+  with Contenedor do
+  for i:=0 to ComponentCount-1 do
+    begin
+       if Components[i] is TEdit then
+         TEdit(Components[i]).Clear;
+       if Components[i] is TComboBox then
+         TComboBox(Components[i]).Clear;
+       if Components[i] is TJvHTComboBox then
+          TJvHTComboBox(Components[i]).ItemIndex:=-1;
+       if Components[i] is TJvComboBox then
+          TJvComboBox(Components[i]).Clear;
+
+    end;
+end;}
+
+
+//--------------------------------------------------------------
+procedure ConfigurarCampo(Campo:TField;FieldName:string;
+    FieldKind:TFieldKind;DataSet:TDataSet;ProviderFlags:TProviderFlags);
+begin
+  with Campo do
+    begin
+      FieldName:=FieldName;
+      FieldKind:=FieldKind;
+      DataSet:=DataSet;
+    end;
+  Campo.ProviderFlags:=ProviderFlags;
+end;
+
+
+
+function EsCUITValido(Num:String):boolean;
+type
+   ArrayDe11=Array[1..11] of Integer;
+var
+  R:ArrayDe11;           {Resultados de Multiplicar por la Tabla Arbitraria}
+  CUIT:ArrayDe11;        {Para convertir cada digito}
+  I:Integer;             {Indice}
+  Sumatoria,             {Sumatoria de los Digitos menos el último}
+  Dividendo,             {Resultado de la División}
+  Producto,
+  Diferencia,
+  DigitoVerif:Integer;   {Digito Verificador Calculado}
+begin
+ result:=false;          { Asumir Invalido }
+ if Length(Num) = 11 then
+   begin
+     try
+       for i:=1 to 11 do CUIT[i]:=StrToInt(Num[i]); { Convertir cada caracter a Número}
+     except
+       Exit;                                        { Si hay error de conversión es CUIT invalido}
+     end; { try }
+   end
+   Else Exit; { if }  { Si no tiene 11 caracteres es CUIT invalido }
+
+ for i:=1 to 10 do             // Multiplicar cada digito por la
+   R[i]:=CUIT[i]*TablaMul[i];   // Tabla Arbitraria menos el último
+
+   Sumatoria:=0;
+ for i:=1 to 10 do
+   Sumatoria:=Sumatoria+R[i];   // Calcular la sumatoria de los resultados
+
+ Dividendo:=Sumatoria div 11;     //  Dividir por 11  (división entera)
+ Producto:=Dividendo * 11;          // El resultado multiplica por 11
+ Diferencia:=Sumatoria - Producto;  // Obtener la diferencia
+ if Diferencia > 0 then             // Si la dif. es mayor a cero
+      DigitoVerif:=11 - Diferencia  // El digito verificador es 11 menos la
+ else DigitoVerif:=Diferencia;       // sino es Cero.
+
+ if DigitoVerif = CUIT[11] then result:=true;  // si el Digito Verificador es igual
+ end;                                         //  al último digito del
+//-----funciones para el IVA----
+
+Function GetIVARET(monto:real):real;
+begin
+//  Result:=monto*RETENCIONIVA;
+end;
+
+//------------------------
+
+
+{procedure TImpositivo.CargarVariablesImpositivas;
+begin
+  with ConexionDB.EjecutarSelect('SELECT * FROM valoresimpositivos',false) do
+    begin
+      if Locate('idVALORESIMPOSITIVOS',0,[]) then
+          IVA:=FieldByName('VALOR').asinteger;
+      if Locate('idVALORESIMPOSITIVOS',2,[]) then
+          IVAReducido:=FieldByName('VALOR').asinteger;
+      self.PERCEPCIONIVA:=varPERCEPCIONIVA;
+      self.PERCEPCIONIVAMONTOMAX:=varPERCEPCIONIVAMONTOMAX;
+      Free;
+    end;
+end; }
+
+procedure TReporte.CargarCabeceraReporte;
+begin
+          CNOMBRE:=AplicacionIni.ReadString('MEMBRETE','NOMBRE','');
+          CDIRECCION:=AplicacionIni.ReadString('MEMBRETE','DIRECCION','');
+          CTELEFONO:=AplicacionIni.ReadString('MEMBRETE','TELEFONO','');
+          CCUIT:=AplicacionIni.ReadString('MEMBRETE','CUIT','');
+          CCONDICIONIVA:=AplicacionIni.ReadString('MEMBRETE','CONDICIONIVA','');
+          CINGRESOBRUTO:=AplicacionIni.ReadString('MEMBRETE','INGRESOBRUTO','');
+          CINSCMUNICIPAL:=AplicacionIni.ReadString('MEMBRETE','INSCMUNICIPAL','');
+          CINICIOACTIVIDADES:=AplicacionIni.ReadString('MEMBRETE','INICIOACTIVIDADES','');
+          CCAI:=AplicacionIni.ReadString('MEMBRETE','CAI','');
+          CFECHAVENC:=AplicacionIni.ReadString('MEMBRETE','FECHAVENC','');
+          CSUCURSAL:=AplicacionIni.ReadString('MEMBRETE','SUCURSAL','');
+          CDISTRIBUIDOR:=AplicacionIni.ReadString('MEMBRETE','DISTRIBUIDOR','');
+          IVA:=AplicacionIni.ReadString('MEMBRETE','IVA','');
+          PREFIJOREMITO:=AplicacionIni.ReadString('MEMBRETE','PREFIJOREMITO','');
+          CODIGOAFIPREMITO:=AplicacionIni.ReadString('MEMBRETE','CODIGOAFIPREMITO','');
+end;
+//---------------------------------------------------
+
+
+//----------------------------------
+procedure CargarReporte(NumRep:integer;
+                       var NombreRep:string;
+                       var PathRep:string;
+                       var TituloRep:string;
+                       var SubTituloRep:string;
+                       var Observacion:String);
+begin
+  with ConexionDB.EjecutarSelect
+       ('SELECT * FROM Reportes WHERE IdReportes='+IntToStr(NumRep),false) do
+   begin
+     if not(IsEmpty)then
+     begin
+          NombreRep:=FieldByName('NOMBRE').AsString;
+          PathRep:=ExtractFilePath(ParamStr(0))+FieldByName('PATH').AsString;
+          TituloRep:=FieldByName('TITULO').AsString;
+          SubTituloRep:=FieldByName('SUBTITULO').AsString;
+     end
+     else
+     begin
+          showmessage('¡El Reporte no fue encontrado, por favor intente con otro valor!');
+          Exit;
+     end;
+   Free;
+   end;
+end;
+
+
+procedure ConsultaGeneral(sql:string;AOwner:TComponent);
+begin
+  ConexionDB.EjecutarSelect(sql,AOwner);
+end;
+
+function ConsultaGeneral(sql:string):TDataSet;
+begin
+  Result:=ConexionDB.EjecutarSelect(sql,false);
+end;
+
+function RetornarSucursal:integer;
+begin
+  result:=ConexionDB.Sucursal;
+end;
+
+function RetornarFechaActual:TDateTime;
+
+begin
+ with ConexionDB.EjecutarSelect('SELECT NOW() AS FECHA',False) do
+  begin
+    Result:=FieldByName('FECHA').AsDateTime;
+    Free;
+  end;
+end;
+
+function RetornarHora:string;
+begin
+ with ConexionDB.EjecutarSelect('SELECT NOW() AS FECHA',False) do
+  begin
+    Result:=TimeToStr(FieldByName('FECHA').AsDateTime);
+    Free;
+  end;
+
+end;
+
+//---------------------------------------------------
+function ExisteCuit(cuit:string):string;
+var sql:string;
+    provedataset:tdataset;
+begin
+   sql:='SELECT idPROVEEDOR,RAZONSOCIAL,CUIT FROM PROVEEDORES WHERE CUIT='+QuotedStr(CUIT);
+   provedataset:=ConexionDB.EJECUTARSELECT(SQL,FALSE);
+   if not provedataset.IsEmpty then
+   result:=provedataset.FieldByName('idPROVEEDOR').AsString+'-'+provedataset.FieldByName('razonsocial').AsString
+   else
+   result:='';
+end;
+
+
+procedure ArchivosSuc(dir, mascara: string;
+  var lista: TStrings; const soloNombres: boolean);
+var
+  SR: TSearchRec;
+begin
+  dir := IncludeTrailingPathDelimiter(dir);
+  if FindFirst(dir + mascara, faAnyFile, SR) = 0 then
+  begin
+    repeat
+      if not soloNombres then
+        //lista.Add(ExtractFileName(ChangeFileExt(dir + SR.Name, '')))
+        lista.Add(ExtractFileName(dir + SR.Name))
+      else
+        lista.Add(dir + SR.Name);
+    until FindNext(SR) <> 0;
+    SysUtils.FindClose(SR);
+  end;
+end;
+
+function DirectorioPedidosSucursales:string;
+begin
+  Result:=DirectorioPedidosSuc
+end;
+
+function DirRemitosIngresoSuc:string;
+begin
+  Result:=DirectorioRemitosIngresoSuc;
+end;
+
+//*******************************************************************
+
+
+//############procedimientos de impresión##########
+
+function IntToLetras(Valor:LongInt):String;
+const
+aUnidad : array[1..15] of string =
+     ('UN','DOS','TRES','CUATRO','CINCO','SEIS',
+      'SIETE','OCHO','NUEVE','DIEZ','ONCE','DOCE',
+      'TRECE','CATORCE','QUINCE');
+aDecena : array[1..9]  of string =
+    ('DIECI','VEINTI','TREINTA','CUARENTA','CINCUENTA',
+     'SESENTA','SETENTA','OCHENTA','NOVENTA');
+aCentena: array[1..9]  of string =
+     ('CIENTO','DOSCIENTOS','TRESCIENTOS',
+      'CUATROCIENTOS','QUINIENTOS','SEISCIENTOS',
+      'SETECIENTOS','OCHOCIENTOS','NOVECIENTOS');
+aMiles: array[1..9]  of string =
+    ('DIECI','VEINTI','TREINTA','CUARENTA','CINCUENTA',
+     'SESENTA','SETENTA','OCHENTA','NOVENTA');
+var
+   Centena, Decena, Unidad, Doble: LongInt;
+   Linea: String;
+begin
+   if valor=100 then
+      Linea:=' CIEN '
+   else
+   begin
+      Linea:='';
+      Centena := Valor div 100;
+      Doble   := Valor - (Centena*100);
+      Decena  := (Valor div 10) - (Centena*10);
+      Unidad  := Valor - (Decena*10) - (Centena*100);
+
+      if Centena>0 then
+         Linea := Linea + Acentena[centena];
+
+      if Doble>0 then
+      begin
+          if Doble=20 then
+             Linea := Linea +' VEINTE '
+          else
+          begin
+              if doble<16 then
+              Linea := Linea + aUnidad[Doble]
+              else
+              begin
+                 Linea := Linea +' '+ Adecena[Decena];
+                     if (Decena>2) and (Unidad<>0) then
+                     Linea := Linea+' Y ';
+                     if Unidad>0 then
+                     Linea := Linea + aUnidad[Unidad];
+              end;
+          end;
+      end;
+   end;
+Result := Linea;
+end;
+
+function IntToLetrasMil(Numero:LongInt):String;
+var
+   Millones,Miles,Unidades: Longint;
+   Linea : String;
+begin
+  {Inicializamos el string que contendrá las letras según el valor
+  numérico}
+  if numero=0 then Linea := 'CERO'
+  else if numero<0 then Linea := 'MENOS '
+       else if numero=1 then
+            begin
+              Linea := 'UN';
+              IntToLetrasMil:= Linea;
+              exit
+            end 
+            else if numero>1 then Linea := '';
+
+  {Determinamos el Nº de millones, miles y unidades de numero en
+  positivo}
+  Numero   := Abs(Numero);
+  Millones := numero div 1000000;
+  Miles    := (numero - (Millones*1000000)) div 1000;
+  Unidades := numero - ((Millones*1000000)+(Miles*1000));
+
+  {Vamos poniendo en el string las cadenas de los números(llamando
+  a subfuncion)}
+  if Millones=1 then Linea:= Linea + ' UN MILLON '
+  else if Millones>1 then Linea := Linea+IntToLetrasMil(Millones)
+                                   + ' MILLONES ';
+ 
+  if Miles =1 then Linea:= Linea + ' MIL '
+  else if Miles>1 then Linea := Linea+IntToLetras(Miles)+
+                                ' MIL ';
+  if Unidades >0 then Linea := Linea+IntToLetras(Unidades);
+
+  IntToLetrasMil:= Linea;
+end;
+
+function AlinearImporte(Numero:real;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=FormatFloat('#########0.00',Numero);
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:=' '+charnumero;
+     end;
+Result:=charnumero;
+end;
+
+
+function AlinearImporteDec(Numero:string;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=Numero;
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:=' '+charnumero;
+     end;
+Result:=' '+charnumero;
+end;
+
+
+function AlinearImporte4Digitos(Numero:real;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=FormatFloat('#########0.0000',Numero);
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:=' '+charnumero;
+     end;
+Result:='$ '+charnumero;
+end;
+
+
+function RellenarNumero(Numero:LongInt;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=FloatToStr(Numero);
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:='0'+charnumero;
+     end;
+Result:=charnumero;
+end;
+
+function RellenarNumeroDer(Numero:LongInt;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=FloatToStr(Numero);
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:=charnumero+'0';
+     end;
+Result:=charnumero;
+end;
+
+function RellenarImporteDec(Numero:real;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=FormatFloat('#########0.00',Numero);
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:='0'+charnumero;
+     end;
+Result:=charnumero;
+end;
+
+function RellenarImporteDecDer(Numero:real;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=FormatFloat('#########0.00',Numero);
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:=charnumero+'0';
+     end;
+Result:=charnumero;
+end;
+
+function AlinearNumero(Numero:LongInt;LenghtNum:integer):String;
+var
+charnumero:string;
+i, cantidad:integer;
+begin
+charnumero:=FloatToStr(Numero);
+cantidad:=Length(charnumero);
+     for i:=1 to LenghtNum-cantidad do
+     begin
+           charnumero:=' '+charnumero;
+     end;
+Result:=charnumero;
+end;
+
+function DigitoVerificadorRemitoIngreso(NumeroProveedor:integer;
+    NumeroRemito:integer
+    ;TotalDetalle:real):integer;
+begin
+ with ConexionDB.EjecutarSelect(
+        'SELECT MOD(('
+        +IntToStr(NumeroProveedor)
+        +'*'+IntToStr(NumeroRemito)+'+ ROUND('
+        +FloatToStr(TotalDetalle)
+        +')+99502)*111,987654) AS DIGITO'
+        ,false) do
+   begin
+      Result:=FieldByName('DIGITO').AsInteger;
+      Free;
+   end;
+end;
+
+procedure TDirectoriosDBF.CargarDirectorios;
+begin
+          DDIRECTORIO:=AplicacionIni.ReadString('DIRECTORIOS','DIRLAVAPRE','');
+          DARCHIVO:=AplicacionIni.ReadString('DIRECTORIOS','ARCHIVOLAVAPRE','');
+          TARCHIVO:=AplicacionIni.ReadString('DIRECTORIOS','ARCHIVOTICKET','');
+          CARCHIVO:=AplicacionIni.ReadString('DIRECTORIOS','ARCHIVOCOMPRA','');
+          DIP:=AplicacionIni.ReadString('DIRECTORIOS','IP','');
+          DBASE:=AplicacionIni.ReadString('DIRECTORIOS','BASE','');
+
+end;
+
+
+{procedure GuardarCDS(CDS:TClientDataSet;NombreArchivo:string;DirectorioInicial:string);
+begin
+   if not(CDS.Active)then
+   begin
+      Application.MessageBox('¡La Consulta no posee registros!'
+      ,'Mensaje',MB_ICONINFORMATION+MB_OK);
+      Exit;
+   end;
+
+   if(CDS.IsEmpty)or(CDS=nil)then
+   begin
+      Application.MessageBox('¡La Consulta no posee registros!'
+      ,'Mensaje',MB_ICONINFORMATION+MB_OK);
+      Exit;
+   end;
+
+   if(trim(NombreArchivo)='')then
+      NombreArchivo:='Conjunto de Datos';
+
+   if(trim(DirectorioInicial)='')then
+      DirectorioInicial:='C:\';
+
+   GuardarArchivo:=TJvSaveDialog.Create(GuardarArchivo);
+   GuardarArchivo.FileName:=NombreArchivo;
+   GuardarArchivo.InitialDir:=DirectorioInicial;
+   GuardarArchivo.Filter:='Conjuntos de Datos (*.cds)|*.cds|Archivos Dinamicos (*.xml)|*.xml';
+   GuardarArchivo.FilterIndex:=1;
+
+   if(GuardarArchivo.Execute)then
+   begin
+      case GuardarArchivo.FilterIndex of
+           1:begin
+              NombreArchivo:=GuardarArchivo.FileName+'.cds';
+              CDS.SaveToFile(NombreArchivo,dfBinary);
+           end;
+           2:begin
+              NombreArchivo:=GuardarArchivo.FileName+'.xml';
+              CDS.SaveToFile(NombreArchivo,dfXML);
+           end;
+      end;
+   end;
+end; }
+
+
+{procedure CargarCDS(var CDS:TClientDataSet);
+begin
+   CargarArchivo:=TJvOpenDialog.Create(CargarArchivo);
+   CargarArchivo.InitialDir:='c:\';
+   CargarArchivo.Filter:='Conjuntos de Datos (*.cds)|*.cds|Archivos Dinamicos (*.xml)|*.xml';
+   CargarArchivo.FilterIndex:=1;
+
+   if(CargarArchivo.Execute)then
+   begin
+      if(CDS.Active)then
+      CDS.EmptyDataSet;
+
+      CDS.Close;
+      CDS.FileName:=CargarArchivo.FileName;
+      CDS.Open;
+   end;
+end;   }
+
+
+function ValidarRestriccion(CodigoProducto:integer; Idsucursal:integer; Idproceso:integer):boolean;
+begin
+   with(ConexionDB.EjecutarSelect('SELECT P.IDPRODUCTOS FROM ENVIOS_PRODUCTOS_SUCURSAL E '
+   +' INNER JOIN PRODUCTOS P ON P.IDPRODUCTOS=E.IDPRODUCTOS '
+   +' WHERE P.CODIGOPRODUCTO='+IntToStr(CodigoProducto)
+   +' AND P.DISCONTINUADO<>1 '
+   +' AND E.IDPROCESOSDIARIOS='+IntToStr(Idproceso)
+   +' AND E.IDSUCURSAL='+IntToStr(Idsucursal),false))do
+   begin
+      if not(IsEmpty)then
+      Result:=true;
+   Free;
+   end;
+end;
+
+function ObtenerFechadeCreacionArchivo(Archivo:string):string;
+var
+  FileHandle : THandle;
+  LocalFileTime : TFileTime;
+  DosFileTime : DWORD;
+  LastCreatedTime : TDateTime;
+  FindData : TWin32FindData;
+begin
+  FileHandle := FindFirstFile(PChar(Archivo), FindData);
+  if FileHandle <> INVALID_HANDLE_VALUE then
+  begin
+      Windows.FindClose(FileHandle);
+      if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then
+      begin
+        FileTimeToLocalFileTime(FindData.ftCreationTime, LocalFileTime);
+        FileTimeToDosDateTime(LocalFileTime,
+        LongRec(DosFileTime).Hi,LongRec(DosFileTime).Lo);
+        LastCreatedTime := FileDateToDateTime(DosFileTime);
+        Result:= FormatDateTime('hh:mm:ss DD/MM/YYYY',LastCreatedTime);
+      end;
+  end;
+end;
+
+function ObtenerFechadeModificacionArchivo(Archivo:string):string;
+var
+  FileHandle : THandle;
+  LocalFileTime : TFileTime;
+  DosFileTime : DWORD;
+  LastEditedTime : TDateTime;
+  FindData : TWin32FindData;
+begin
+  FileHandle := FindFirstFile(PChar(Archivo), FindData);
+  if FileHandle <> INVALID_HANDLE_VALUE then
+  begin
+      Windows.FindClose(FileHandle);
+      if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then
+      begin
+        FileTimeToLocalFileTime(FindData.ftLastWriteTime, LocalFileTime);
+        FileTimeToDosDateTime(LocalFileTime,
+        LongRec(DosFileTime).Hi,LongRec(DosFileTime).Lo);
+        LastEditedTime := FileDateToDateTime(DosFileTime);
+        Result:= FormatDateTime('hh:mm:ss DD/MM/YYYY',LastEditedTime);
+      end;
+  end;
+end;
+
+
+function ObtenerFechadeUltimoAccesoArchivo(Archivo:string):string;
+var
+  FileHandle : THandle;
+  LocalFileTime : TFileTime;
+  DosFileTime : DWORD;
+  LastAccessTime : TDateTime;
+  FindData : TWin32FindData;
+begin
+  FileHandle := FindFirstFile(PChar(Archivo), FindData);
+  if FileHandle <> INVALID_HANDLE_VALUE then
+  begin
+      Windows.FindClose(FileHandle);
+      if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then
+      begin
+        FileTimeToLocalFileTime(FindData.ftLastAccessTime , LocalFileTime);
+        FileTimeToDosDateTime(LocalFileTime,
+        LongRec(DosFileTime).Hi,LongRec(DosFileTime).Lo);
+        LastAccessTime := FileDateToDateTime(DosFileTime);
+        Result:= FormatDateTime('hh:mm:ss DD/MM/YYYY',LastAccessTime);
+      end;
+  end;
+end;
+
+
+function ObtenerFechaArchivo(PathArchivo: string): string;
+var 
+  FileHandle : THandle;
+  LocalFileTime : TFileTime;
+  DosFileTime : DWORD;
+  LastAccessedTime : TDateTime;
+  FindData : TWin32FindData;
+begin 
+  FileHandle := FindFirstFile(PChar(PathArchivo), FindData);
+  if FileHandle <> INVALID_HANDLE_VALUE then 
+  begin 
+    Windows.FindClose(FileHandle);
+    if (FindData.dwFileAttributes and FILE_ATTRIBUTE_DIRECTORY) = 0 then 
+    begin
+      FileTimeToLocalFileTime(FindData.ftCreationTime, LocalFileTime);
+      FileTimeToDosDateTime(LocalFileTime,
+      LongRec(DosFileTime).Hi,LongRec(DosFileTime).Lo);
+      LastAccessedTime := FileDateToDateTime(DosFileTime);
+      result := DateTimeToStr(LastAccessedTime);
+    end; 
+  end; 
+
+end;
+
+
+function ExtraerNumeroEnvioPrecios(TipoEnvio:integer):integer;
+var
+DataSetTemporal:TDataset;
+NumeroEnvio:integer;
+begin
+   ConexionDB.AddAct('INSERT INTO enviocambioprecios (TIPO, FECHA) '
+                    +' VALUES ('+IntToStr(TipoEnvio)+',Now())');
+   ConexionDB.AddAct('SELECT @NUMERO:=LAST_INSERT_ID()');
+   ConexionDB.EjecutarAct;
+
+   DataSetTemporal:=ConexionDB.EjecutarSelect('SELECT @NUMERO',false);
+   NumeroEnvio:=DataSetTemporal.FieldByName('@NUMERO').AsInteger;
+   DataSetTemporal.Free;
+   Result:=NumeroEnvio;
+end;
+
+
+//-------------Funciones y Procedimientos de  TBuscarPorDescripcion-------------
+
+
+constructor TGUIBuscarPorDescripcion.Create(DataSetReceptor_par:TDataSet
+            ;WinControlReceptor_par:TWinControl;CampoReceptor_par:string
+            ;CampoClave_par:string;StrSql_par:string);
+begin
+    DataSetReceptor:=DataSetReceptor_par;
+    CampoReceptor:=CampoReceptor_par;
+    CampoClave := CampoClave_par;
+    StrSql := StrSql_par;
+    WinControlReceptor:=WinControlReceptor_par;
+
+    if WinControlReceptor is TDBEdit then
+      TDBEdit(WinControlReceptor).OnKeyDown:=EventoKeyDownDBEditReceptor
+     else
+        if WinControlReceptor is TDBGrid then
+            TDBEdit(WinControlReceptor).OnKeyDown:=EventoKeyDownDBEditReceptor
+         else
+            raise Exception.Create('Para esta funcionaliad solo se puede usar DBEdit o DBGrid');   
+
+
+end;
+
+
+destructor TGUIBuscarPorDescripcion.Destroy;
+begin
+
+end;
+
+procedure TGUIBuscarPorDescripcion.PrepararDataSetConsulta(StrFiltro_par:string);
+var sql:string;
+begin
+  sql:=StringReplace(StrSql,'#s',QuotedStr('%'+StrFiltro_par+'%'),[rfReplaceAll]);
+  sql:=sql+' limit 200';
+  ConexionDB.EjecutarSelect(sql,FormBuscar.DSBusqueda);
+
+end;
+
+procedure TGUIBuscarPorDescripcion.EventoKeyPressFiltro(Sender: TObject; var Key: Char);
+begin
+  if Key<>#13 then
+    PrepararDataSetConsulta(FormBuscar.EditFiltro.Text)
+  else
+    with FormBuscar.DSBusqueda.DataSet do
+      begin
+        if RecordCount>0 then
+          begin
+              DataSetReceptor.FieldByName(CampoReceptor).AsInteger:=
+                FieldByName(CampoClave).AsInteger ;
+                FormBuscar.Close;
+          end;
+      end;
+end;
+
+procedure TGUIBuscarPorDescripcion.EventoKeyDownFiltro(Sender: TObject
+    ; var Key: Word; Shift: TShiftState);
+begin
+    if key=VK_DOWN then
+      begin
+        FormBuscar.DSBusqueda.DataSet.Next;
+      end;
+    if key=VK_UP then
+      begin
+        FormBuscar.DSBusqueda.DataSet.Prior;
+      end;
+end;
+
+procedure TGUIBuscarPorDescripcion.EventoKeyDownDBEditReceptor(Sender: TObject; var Key: Word
+  ; Shift: TShiftState);
+begin
+  if key=VK_F3 then
+    begin
+        MostrarBusqueda;
+    end;
+end;
+
+procedure TGUIBuscarPorDescripcion.MostrarBusqueda;
+begin
+
+  FormBuscar:=TFormBuscarPorDescripcion.Create(nil);
+  PrepararDataSetConsulta('');
+  FormBuscar.EditFiltro.OnKeyPress:=EventoKeyPressFiltro;
+  FormBuscar.EditFiltro.OnKeyDown:= EventoKeyDownFiltro;
+
+  FormBuscar.ShowModal;
+
+end;
+
+//--------------------------------------------------------------------
+
+
+initialization
+  AplicacionIni := TIniFile.Create(ExtractFilePath(ParamStr(0)) + ArchivoIni);
+//  Impositivo:=TImpositivo.Create;
+//  Impositivo.CargarVariablesImpositivas;
+  Reporte:=TReporte.Create;
+  Reporte.CargarCabeceraReporte;
+
+{  if Trim(AplicacionIni.ReadString('SUCURSAL','CODIGO',''))='' then
+    begin
+            MessageDlg(PChar('La sucursal no fue asignada'
+              +' la base de datos. Consulte con su Administrador'
+              )
+              , mtError,[mbOk], 0);
+              Halt;
+    end;
+  CodigoSucursal:=StrToInt(AplicacionIni.ReadString('SUCURSAL','CODIGO',''));
+  NombreArchivoRemitoSalida:=AplicacionIni.ReadString('DIRECTORIOS','RESUMENREMITO','');
+  LibroIVAActivo:=AplicacionIni.ReadString('IVA','LIBROIVAACTIVO','');
+  with ConexionDB.EjecutarSelect('SELECT PROVEEDOR,CLIENTE,NOMBRE FROM sucursal WHERE '
+          +' idSUCURSAL='+IntToStr(CodigoSucursal),False) do
+    begin
+      CodigoProveedorSucursal:=FieldByName('PROVEEDOR').AsInteger;
+      CodigoClienteSucursal:=FieldByName('CLIENTE').AsInteger;
+      NombreCasaCentral:=FieldByName('NOMBRE').AsString;
+      Free;
+    end;
+  DelayEtiquetadora:=9000;  }
+  AplicacionIni.Free;
+finalization
+//  Impositivo.free;
+  Reporte.Free;
+
+end.

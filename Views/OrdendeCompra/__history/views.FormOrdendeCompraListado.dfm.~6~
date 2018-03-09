@@ -1,0 +1,130 @@
+object FormListadoOrden: TFormListadoOrden
+  Left = 0
+  Top = 0
+  Caption = 'Listado de Ordenes de Compra'
+  ClientHeight = 471
+  ClientWidth = 786
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  OldCreateOrder = False
+  Position = poDesktopCenter
+  Visible = True
+  OnClose = FormClose
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 786
+    Height = 81
+    Align = alTop
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 120
+      Top = 24
+      Width = 28
+      Height = 13
+      Caption = 'Filtro:'
+    end
+    object Edit1: TEdit
+      Left = 154
+      Top = 21
+      Width = 231
+      Height = 21
+      TabOrder = 0
+    end
+    object Button1: TButton
+      Left = 391
+      Top = 19
+      Width = 75
+      Height = 25
+      Caption = 'Buscar'
+      TabOrder = 1
+      OnClick = Button1Click
+    end
+  end
+  object TPanel
+    Left = 0
+    Top = 392
+    Width = 786
+    Height = 79
+    Align = alBottom
+    TabOrder = 1
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 81
+    Width = 786
+    Height = 311
+    Align = alClient
+    TabOrder = 2
+    object Splitter1: TSplitter
+      Left = 1
+      Top = 129
+      Width = 784
+      Height = 3
+      Cursor = crVSplit
+      Align = alTop
+      ExplicitWidth = 141
+    end
+    object GroupBox1: TGroupBox
+      Left = 1
+      Top = 1
+      Width = 784
+      Height = 128
+      Align = alTop
+      Caption = 'Cabecera'
+      TabOrder = 0
+      object DBGridCabecera: TDBGrid
+        Left = 2
+        Top = 15
+        Width = 780
+        Height = 111
+        Align = alClient
+        DataSource = DSCabecera
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+      end
+    end
+    object GroupBox2: TGroupBox
+      Left = 1
+      Top = 132
+      Width = 784
+      Height = 178
+      Align = alClient
+      Caption = 'Detalle'
+      TabOrder = 1
+      object DBGridDetalle: TDBGrid
+        Left = 2
+        Top = 15
+        Width = 780
+        Height = 161
+        Align = alClient
+        DataSource = DSDetalle
+        TabOrder = 0
+        TitleFont.Charset = DEFAULT_CHARSET
+        TitleFont.Color = clWindowText
+        TitleFont.Height = -11
+        TitleFont.Name = 'Tahoma'
+        TitleFont.Style = []
+      end
+    end
+  end
+  object DSCabecera: TDataSource
+    Left = 456
+    Top = 128
+  end
+  object DSDetalle: TDataSource
+    Left = 448
+    Top = 232
+  end
+end
