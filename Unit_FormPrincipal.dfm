@@ -31,8 +31,8 @@ object FormPrincipal: TFormPrincipal
     end
   end
   object ActionListPrincipal: TActionList
-    Left = 368
-    Top = 64
+    Left = 192
+    Top = 224
     object ActionAltaOrdendeCompra: TAction
       Caption = 'Alta de Orden de Compra'
       OnExecute = ActionAltaOrdendeCompraExecute
