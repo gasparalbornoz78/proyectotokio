@@ -18,8 +18,8 @@ object FormPrincipal: TFormPrincipal
   PixelsPerInch = 96
   TextHeight = 13
   object MenuPrincipal: TMainMenu
-    Left = 504
-    Top = 80
+    Left = 520
+    Top = 168
     object OrdendeCompra1: TMenuItem
       Caption = 'Orden de Compra'
       object AltadeOrdendeCompra1: TMenuItem
