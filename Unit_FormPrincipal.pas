@@ -27,7 +27,7 @@ type
   public
     { Public declarations }
   end;
-//prueba alejandro
+//prueba alejandro  modificación desde daniel medina
 var
   FormPrincipal: TFormPrincipal;
 
