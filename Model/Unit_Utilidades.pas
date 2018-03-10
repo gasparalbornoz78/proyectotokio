@@ -1023,6 +1023,8 @@ begin
       begin
         if RecordCount>0 then
           begin
+              if (DataSetReceptor.State<>dsEdit) and (DataSetReceptor.State<>dsInsert) then
+                  DataSetReceptor.Edit;
               DataSetReceptor.FieldByName(CampoReceptor).AsInteger:=
                   FieldByName(CampoClave).AsInteger ;
               FormBuscar.Close;
