@@ -27,7 +27,7 @@ type
   public
     { Public declarations }
   end;
-
+//prueba alejandro
 var
   FormPrincipal: TFormPrincipal;
 
