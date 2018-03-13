@@ -1017,7 +1017,10 @@ end;
 procedure TGUIBuscarPorDescripcion.EventoKeyPressFiltro(Sender: TObject; var Key: Char);
 begin
   if Key<>#13 then
-    PrepararDataSetConsulta(FormBuscar.EditFiltro.Text)
+    if Key=#27 then
+      FormBuscar.BotonCancelar.Click
+    else
+      PrepararDataSetConsulta(FormBuscar.EditFiltro.Text)
   else
     with FormBuscar.DSBusqueda.DataSet do
       begin

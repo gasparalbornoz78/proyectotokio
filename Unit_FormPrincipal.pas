@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, System.Actions, Vcl.ActnList
-  ,Vcl.DBGrids,Vcl.DBCtrls,Data.DB;
+  ,Vcl.DBGrids,Vcl.DBCtrls,Data.DB, Vcl.ToolWin, Vcl.ActnMan, Vcl.ActnCtrls,
+  Vcl.PlatformDefaultStyleActnCtrls;
 
 type
   TFormPrincipal = class(TForm)
@@ -16,13 +17,16 @@ type
     ActionAltaOrdendeCompra: TAction;
     ActionListadoOrdendeCompra: TAction;
     ListadodeOrdendeCompra1: TMenuItem;
+    ActionToolBar1: TActionToolBar;
     procedure ActionAltaOrdendeCompraExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ActionListadoOrdendeCompraExecute(Sender: TObject);
+
   private
     { Private declarations }
       procedure AppMessage(var Msg:TMsg;var Handled:Boolean);
       procedure AppException(Sender:TObject;E:Exception);
+      procedure AppActionExecute(Action:TBasicAction;var handled:boolean);
 
   public
     { Public declarations }
@@ -39,6 +43,7 @@ procedure TFormPrincipal.ActionListadoOrdendeCompraExecute(Sender: TObject);
 begin
   FormListadoOrden:=TFormListadoOrden.Create(self);
   FormListadoOrden.Show;
+
 end;
 
 procedure TFormPrincipal.AppException(Sender:TObject;E:Exception);
@@ -60,6 +65,12 @@ begin
     MessageDlg('Error no controlado: '+E.Message,mtError,[mbOk],0,mbOk);
 
 
+end;
+
+
+procedure TFormPrincipal.AppActionExecute(Action:TBasicAction;var handled:boolean);
+begin
+  showmessage('Action en TApplication: '+TAction(Action).Name);
 end;
 
 
@@ -243,10 +254,12 @@ procedure TFormPrincipal.FormCreate(Sender: TObject);
 begin
   Application.OnMessage:=AppMessage;
   Application.OnException:=AppException;
+  Application.OnActionExecute:=AppActionExecute;
 end;
 
 procedure TFormPrincipal.ActionAltaOrdendeCompraExecute(Sender: TObject);
 begin
+  ShowMessage('action ejecutada en formulario');
   FormAltaOrdendeCompra:=TFormAltaOrdendeCompra.create(self);
   FormAltaOrdendeCompra.Show;
 end;

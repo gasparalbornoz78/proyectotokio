@@ -107,7 +107,7 @@ type
 
     procedure RecuperarMaestroDetalle(DataSetMaestro:TDataSet
           ;DataSetDetalle:TDataSet;NombreTablaMaestro:string
-          ;NombreTablaDetalle:string;CampoFK:string;idMaestro:integer);
+          ;NombreTablaDetalle:string;CampoPK:string;CampoFK:string;idMaestro:integer);
     function CrearDataSetLookup(Owner:TComponent;TableName:string;CampoClave:string
         ;CampoDescriptivo:string;Filtro:string):TDataSet;
 
@@ -859,7 +859,7 @@ begin
           Next;
           while not Eof do
             begin
-              StrSql:=StrSql+',(@idCabecera';
+              StrSql:=StrSql+',('+IntToStr(IdMaestro);
               for I := 0 to Fields.Count-1 do
                 begin
                   if (Fields[I].Tag=0) then
@@ -868,6 +868,7 @@ begin
               StrSql:=StrSql+')';
               Next;
             end;
+            SqlList.Add(StrSql);
         end;
     end;
   Result:=EjecutarAct(SqlList);
@@ -877,12 +878,16 @@ end;
 
 procedure TConexionDB.RecuperarMaestroDetalle(DataSetMaestro:TDataSet
           ;DataSetDetalle:TDataSet;NombreTablaMaestro:string
-          ;NombreTablaDetalle:string;CampoFK:string;idMaestro:integer);
+          ;NombreTablaDetalle:string;CampoPK:string;CampoFK:string;idMaestro:integer
+          );
   var DataSetAux:TDataSet;
       I:integer;
 begin
+  if (Trim(NombreTablaMaestro)='') or (Trim(NombreTablaDetalle)='') then
+      raise Exception.Create('Indicar los nombres de las tablas maestro y detalle');
+
   DataSetAux:=EjecutarSelect('SELECT * FROM '+NombreTablaMaestro+' WHERE '
-         +' NUMERO = '+IntToStr(idMaestro)
+         +CampoPK+' = '+IntToStr(idMaestro)
         ,false);
 
   with DataSetAux do
@@ -906,9 +911,10 @@ begin
 
   FreeAndNil(DataSetAux);
 
-  DataSetAux:=EjecutarSelect('SELECT idPRODUCTOS,CANTIDAD FROM '+NombreTablaDetalle+' WHERE NUMERO='
+  DataSetAux:=EjecutarSelect('SELECT * FROM '+NombreTablaDetalle+' WHERE '+CampoPK+'='
       +IntToStr(idMaestro)
       ,false);
+
 
   with DataSetAux do
     begin
@@ -929,7 +935,6 @@ begin
           next;
         end;
     end;
-
 
 
   FreeAndNil(DataSetAux);
@@ -1027,9 +1032,12 @@ begin
               StrSql:=StrSql+')';
               Next;
             end;
+          SqlList.Add(StrSql);
+
         end;
 
     end;
+  EjecutarAct(SqlList);
   DataSetAux:=EjecutarSelect('SELECT @idCabecera AS ID',false);
   //devuelvo el id del registro Maestro insertado
   Result:=DataSetAux.FieldByName('ID').AsInteger;

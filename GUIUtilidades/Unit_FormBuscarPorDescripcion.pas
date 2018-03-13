@@ -14,7 +14,9 @@ type
     EditFiltro: TEdit;
     DBGrid: TDBGrid;
     DSBusqueda: TDataSource;
+    BotonCancelar: TButton;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure DBGridDblClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -27,6 +29,13 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TFormBuscarPorDescripcion.DBGridDblClick(Sender: TObject);
+var keychar:char;
+begin
+  keychar:=#13;
+  EditFiltro.OnKeyPress(EditFiltro,KeyChar);
+end;
 
 procedure TFormBuscarPorDescripcion.FormClose(Sender: TObject;
   var Action: TCloseAction);

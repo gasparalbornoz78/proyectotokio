@@ -8,7 +8,8 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
   FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
   FireDAC.Comp.DataSet, FireDAC.Comp.Client, Vcl.Grids, Vcl.DBGrids,
-  Vcl.DBCtrls, Vcl.Mask,Unit_Utilidades, FireDAC.Stan.Async, FireDAC.DApt;
+  Vcl.DBCtrls, Vcl.Mask,Unit_Utilidades, FireDAC.Stan.Async, FireDAC.DApt,
+  System.Actions, Vcl.ActnList;
 
   const ALTA='ALTA';
   const MODIFICACION='MODIFICACION';
@@ -63,17 +64,20 @@ type
     Label3: TLabel;
     DBEdit2: TDBEdit;
     DBText2: TDBText;
-    DBEdit3: TDBEdit;
+    DBEditFechaEngrega: TDBEdit;
     DSCabecera: TDataSource;
     FDMemTCabeceraidCONDICIONES: TIntegerField;
     FDMemTCabeceraRazonSocialProveedor: TStringField;
-    FDMemTDetalleCODIGOPRODUCTO: TIntegerField;
     FDMemTDetalleDetalle: TStringField;
     FDMemTCabeceraNUMERO: TIntegerField;
     DataSource1: TDataSource;
+    ActionList1: TActionList;
+    ActionOC_save: TAction;
     procedure Button1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FDMemTDetalleBeforePost(DataSet: TDataSet);
+    procedure ActionOC_saveExecute(Sender: TObject);
   private
     { Private declarations }
     GUIBuscarPorDescripcion: TGUIBuscarPorDescripcion;
@@ -107,10 +111,15 @@ begin
     idNumerodeOrden:=idOrden_par;
 end;
 
+procedure TFormAltaOrdendeCompra.ActionOC_saveExecute(Sender: TObject);
+begin
+    ShowMessage('Action en formulario: '+TAction(Sender).Name);
+end;
+
 procedure TFormAltaOrdendeCompra.Button1Click(Sender: TObject);
 var I:integer;
 begin
-  FDMemTCabecera.Post;
+//  FDMemTCabecera.Post;
   if (FDMemTDetalle.State=dsEdit) or (FDMemTDetalle.State=dsInsert) then
       FDMemTDetalle.Post;
 
@@ -128,6 +137,22 @@ begin
       ShowMessage('Cantidad de Filas afectadas: '+IntToStr(I));
     end;
 
+  FDMemTCabecera.Close;
+  FDMemTCabecera.Open;
+  FDMemTDetalle.Close;
+  FDMemTDetalle.Open;
+  DBEditFechaEngrega.SetFocus;
+
+end;
+
+procedure TFormAltaOrdendeCompra.FDMemTDetalleBeforePost(DataSet: TDataSet);
+begin
+if FDMemTDetalle.FieldByName('Detalle').AsString.Trim='' then
+  begin
+    MessageDlg('Ingrese un código de producto válido',mtError,[mbOk],0, mbOk);
+    Abort
+  end;
+
 end;
 
 procedure TFormAltaOrdendeCompra.FormClose(Sender: TObject;
@@ -138,6 +163,8 @@ end;
 
 procedure TFormAltaOrdendeCompra.FormCreate(Sender: TObject);
 begin
+
+
 
   with FDMemTCabeceraRazonSocialProveedor do
     begin
@@ -152,23 +179,12 @@ begin
   with FDMemTDetalleDetalle do
     begin
       FieldKind:=fkLookup;
-      KeyFields:='CODIGOPRODUCTO';
+      KeyFields:='idPRODUCTOS';
       Tag:=1;
       LookupDataSet:=ConexionDB.CrearDataSetLookup(self,'productos'
-        ,'CODIGOPRODUCTO','DETALLE','');
-      LookupKeyFields:='CODIGOPRODUCTO';
-      LookupResultField:='DETALLE';
-
-    end;
-  with FDMemTDetalleidPRODUCTOS do
-    begin
-      FieldKind:=fkLookup;
-      Tag:=0;
-      KeyFields:='CODIGOPRODUCTO';
-      LookupDataSet:=ConexionDB.CrearDataSetLookup(self,'productos'
-        ,'CODIGOPRODUCTO','idPRODUCTOS','');
-      LookupKeyFields:='CODIGOPRODUCTO';
-      LookupResultField:='idPRODUCTOS';
+        ,'idPRODUCTOS','DETALLESUCURSALES','');
+      LookupKeyFields:='idPRODUCTOS';
+      LookupResultField:='DETALLESUCURSALES';
     end;
   FDMemTCabecera.Open;
   FDMemTDetalle.Open;
@@ -180,8 +196,9 @@ begin
     begin
         ConexionDB.RecuperarMaestroDetalle(FDMemTCabecera
             ,FDMemTDetalle,'ordendecompra','detalleordendecompra','NUMERO'
-            ,idNumerodeOrden);
+            ,'NUMERO',idNumerodeOrden);
     end;
+
 
   {esto es para la ventana de búsqueda con f3}
   GUIBuscarPorDescripcion:= TGUIBuscarPorDescripcion.Create(FDMemTCabecera
@@ -190,8 +207,8 @@ begin
       ,'SELECT idProveedor as Codigo,RazonSocial as Nombre FROM proveedores WHERE RazonSocial LIKE #s');
   GUIBuscarPorDescripcion:= TGUIBuscarPorDescripcion.Create(FDMemTDetalle
       ,DBGridDetalle
-      ,'CODIGOPRODUCTO','Codigo'
-      ,'SELECT idPRODUCTOS as Codigo,DETALLE as Descripcion FROM productos WHERE DETALLE LIKE #s');
+      ,'idPRODUCTOS','Codigo'
+      ,'SELECT idPRODUCTOS AS Codigo,DETALLE as Descripcion FROM productos WHERE DETALLE LIKE #s');
 
 end;
 

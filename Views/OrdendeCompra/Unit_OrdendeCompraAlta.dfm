@@ -25,7 +25,6 @@ object FormAltaOrdendeCompra: TFormAltaOrdendeCompra
     Height = 193
     Align = alTop
     TabOrder = 0
-    ExplicitTop = -6
     object Label1: TLabel
       Left = 16
       Top = 50
@@ -80,7 +79,7 @@ object FormAltaOrdendeCompra: TFormAltaOrdendeCompra
       DataSource = DSCabecera
       TabOrder = 2
     end
-    object DBEdit3: TDBEdit
+    object DBEditFechaEngrega: TDBEdit
       Left = 96
       Top = 6
       Width = 77
@@ -102,9 +101,8 @@ object FormAltaOrdendeCompra: TFormAltaOrdendeCompra
       Top = 24
       Width = 75
       Height = 25
-      Caption = 'Guardar'
+      Action = ActionOC_save
       TabOrder = 0
-      OnClick = Button1Click
     end
     object Button2: TButton
       Left = 416
@@ -133,11 +131,6 @@ object FormAltaOrdendeCompra: TFormAltaOrdendeCompra
       item
         Expanded = False
         FieldName = 'idPRODUCTOS'
-        Visible = True
-      end
-      item
-        Expanded = False
-        FieldName = 'CODIGOPRODUCTO'
         Visible = True
       end
       item
@@ -223,6 +216,7 @@ object FormAltaOrdendeCompra: TFormAltaOrdendeCompra
     Top = 136
   end
   object FDMemTDetalle: TFDMemTable
+    BeforePost = FDMemTDetalleBeforePost
     FetchOptions.AssignedValues = [evMode]
     FetchOptions.Mode = fmAll
     ResourceOptions.AssignedValues = [rvSilentMode]
@@ -234,10 +228,6 @@ object FormAltaOrdendeCompra: TFormAltaOrdendeCompra
     Top = 136
     object FDMemTDetalleidPRODUCTOS: TIntegerField
       FieldName = 'idPRODUCTOS'
-    end
-    object FDMemTDetalleCODIGOPRODUCTO: TIntegerField
-      Tag = 1
-      FieldName = 'CODIGOPRODUCTO'
     end
     object FDMemTDetalleDetalle: TStringField
       FieldName = 'Detalle'
@@ -396,5 +386,13 @@ object FormAltaOrdendeCompra: TFormAltaOrdendeCompra
     DataSet = FDMemTCabecera
     Left = 424
     Top = 80
+  end
+  object ActionList1: TActionList
+    Left = 288
+    Top = 256
+    object ActionOC_save: TAction
+      Caption = 'Guardar'
+      OnExecute = ActionOC_saveExecute
+    end
   end
 end
