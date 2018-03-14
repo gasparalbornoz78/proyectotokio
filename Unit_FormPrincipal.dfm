@@ -35,9 +35,6 @@ object FormPrincipal: TFormPrincipal
     Font.Style = []
     ParentFont = False
     Spacing = 0
-    ExplicitLeft = 280
-    ExplicitTop = 248
-    ExplicitWidth = 150
   end
   object MenuPrincipal: TMainMenu
     Left = 520

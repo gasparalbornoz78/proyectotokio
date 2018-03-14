@@ -12,7 +12,9 @@ uses
   Service.OrdendeCompra in 'Service\OrdendeCompra\Service.OrdendeCompra.pas',
   Utilidades.JSONDataset in 'Service\transferenciaarchivos\json\Utilidades.JSONDataset.pas',
   Unit_OrdendeCompraAlta in 'Views\OrdendeCompra\Unit_OrdendeCompraAlta.pas' {FormAltaOrdendeCompra},
-  views.FormOrdendeCompraListado in 'Views\OrdendeCompra\views.FormOrdendeCompraListado.pas' {FormListadoOrden};
+  views.FormOrdendeCompraListado in 'Views\OrdendeCompra\views.FormOrdendeCompraListado.pas' {FormListadoOrden},
+  seguridad.UsuarioService in 'Seguridad\seguridad.UsuarioService.pas',
+  seguridad.FormLogin in 'Seguridad\seguridad.FormLogin.pas' {FormLogin};
 
 {$R *.res}
 

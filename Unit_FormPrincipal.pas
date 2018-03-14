@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, System.Actions, Vcl.ActnList
   ,Vcl.DBGrids,Vcl.DBCtrls,Data.DB, Vcl.ToolWin, Vcl.ActnMan, Vcl.ActnCtrls,
-  Vcl.PlatformDefaultStyleActnCtrls;
+  Vcl.PlatformDefaultStyleActnCtrls, Vcl.StdCtrls;
 
 type
   TFormPrincipal = class(TForm)
@@ -36,7 +36,8 @@ var
   FormPrincipal: TFormPrincipal;
 
 implementation
-  uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado;
+  uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado
+    ,seguridad.UsuarioService, seguridad.FormLogin;
 {$R *.dfm}
 
 procedure TFormPrincipal.ActionListadoOrdendeCompraExecute(Sender: TObject);
@@ -255,6 +256,10 @@ begin
   Application.OnMessage:=AppMessage;
   Application.OnException:=AppException;
   Application.OnActionExecute:=AppActionExecute;
+  FormLogin:=TFormLogin.create(self);
+  FormLogin.ShowModal;
+  UsuarioService.AutorizarAcciones(ActionListPrincipal);
+
 end;
 
 procedure TFormPrincipal.ActionAltaOrdendeCompraExecute(Sender: TObject);
