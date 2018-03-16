@@ -36,8 +36,9 @@ var
   FormPrincipal: TFormPrincipal;
 
 implementation
-  uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado
-    ,seguridad.UsuarioService, seguridad.FormLogin;
+  uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado,
+  seguridad.Unit_FormLogin;
+//    ,seguridad.UsuarioService, seguridad.FormLogin;
 {$R *.dfm}
 
 procedure TFormPrincipal.ActionListadoOrdendeCompraExecute(Sender: TObject);

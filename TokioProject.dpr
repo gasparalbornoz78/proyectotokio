@@ -13,8 +13,8 @@ uses
   Utilidades.JSONDataset in 'Service\transferenciaarchivos\json\Utilidades.JSONDataset.pas',
   Unit_OrdendeCompraAlta in 'Views\OrdendeCompra\Unit_OrdendeCompraAlta.pas' {FormAltaOrdendeCompra},
   views.FormOrdendeCompraListado in 'Views\OrdendeCompra\views.FormOrdendeCompraListado.pas' {FormListadoOrden},
-  seguridad.UsuarioService in 'Seguridad\seguridad.UsuarioService.pas',
-  seguridad.FormLogin in 'Seguridad\seguridad.FormLogin.pas' {FormLogin};
+  seguridad.Unit_FormLogin in 'Seguridad\seguridad.Unit_FormLogin.pas' {FormLogin},
+  seguridad.UsuarioService in 'Seguridad\seguridad.UsuarioService.pas';
 
 {$R *.res}
 
@@ -23,5 +23,6 @@ begin
   Application.MainFormOnTaskbar := True;
   TStyleManager.TrySetStyle('Metropolis UI Blue');
   Application.CreateForm(TFormPrincipal, FormPrincipal);
+  Application.CreateForm(TFormLogin, FormLogin);
   Application.Run;
 end.

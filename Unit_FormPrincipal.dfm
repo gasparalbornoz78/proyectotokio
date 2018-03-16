@@ -37,8 +37,8 @@ object FormPrincipal: TFormPrincipal
     Spacing = 0
   end
   object MenuPrincipal: TMainMenu
-    Left = 520
-    Top = 168
+    Left = 312
+    Top = 176
     object OrdendeCompra1: TMenuItem
       Caption = 'Orden de Compra'
       object AltadeOrdendeCompra1: TMenuItem
@@ -50,8 +50,8 @@ object FormPrincipal: TFormPrincipal
     end
   end
   object ActionListPrincipal: TActionList
-    Left = 192
-    Top = 224
+    Left = 200
+    Top = 176
     object ActionAltaOrdendeCompra: TAction
       Caption = 'Alta de Orden de Compra'
       OnExecute = ActionAltaOrdendeCompraExecute
