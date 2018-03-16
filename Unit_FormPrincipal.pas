@@ -37,7 +37,7 @@ var
 
 implementation
   uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado,
-  seguridad.Unit_FormLogin;
+  seguridad.Unit_FormLogin,seguridad.UsuarioService;
 //    ,seguridad.UsuarioService, seguridad.FormLogin;
 {$R *.dfm}
 
@@ -257,9 +257,10 @@ begin
   Application.OnMessage:=AppMessage;
   Application.OnException:=AppException;
   Application.OnActionExecute:=AppActionExecute;
-  FormLogin:=TFormLogin.create(self);
+  FormLogin:=TFormLogin.Create(self);
   FormLogin.ShowModal;
   UsuarioService.AutorizarAcciones(ActionListPrincipal);
+
 
 end;
 
