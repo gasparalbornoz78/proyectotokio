@@ -36,6 +36,16 @@ object FormPrincipal: TFormPrincipal
     ParentFont = False
     Spacing = 0
   end
+  object Button1: TButton
+    Left = 248
+    Top = 336
+    Width = 75
+    Height = 25
+    Caption = 'Alta de Usuario'
+    TabOrder = 1
+    Visible = False
+    OnClick = Button1Click
+  end
   object MenuPrincipal: TMainMenu
     Left = 472
     Top = 248
@@ -46,6 +56,13 @@ object FormPrincipal: TFormPrincipal
       end
       object ListadodeOrdendeCompra1: TMenuItem
         Action = ActionListadoOrdendeCompra
+      end
+    end
+    object AltadeUsuario1: TMenuItem
+      Caption = 'Usuarios'
+      OnClick = ActionAltadeUsuarioExecute
+      object AltadeUsuario2: TMenuItem
+        Action = ActionAltadeUsuario
       end
     end
   end
@@ -61,6 +78,11 @@ object FormPrincipal: TFormPrincipal
       Category = 'Orden de Compra'
       Caption = 'Listado de Orden de Compra'
       OnExecute = ActionListadoOrdendeCompraExecute
+    end
+    object ActionAltadeUsuario: TAction
+      Category = 'Usuarios'
+      Caption = 'Alta de Usuario'
+      OnExecute = ActionAltadeUsuarioExecute
     end
   end
 end

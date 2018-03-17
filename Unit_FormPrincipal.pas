@@ -79,7 +79,7 @@ end;
 
 procedure TFormPrincipal.AppActionExecute(Action:TBasicAction;var handled:boolean);
 begin
-  showmessage('Action en TApplication: '+TAction(Action).Name);
+  //showmessage('Action en TApplication: '+TAction(Action).Name);
 end;
 
 
