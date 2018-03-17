@@ -24,7 +24,6 @@ object FormLogin: TFormLogin
     Height = 200
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = -8
     object Label1: TLabel
       Left = 88
       Top = 69
@@ -62,8 +61,6 @@ object FormLogin: TFormLogin
     Height = 41
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 196
-    ExplicitWidth = 505
     object Button1: TButton
       Left = 40
       Top = 6

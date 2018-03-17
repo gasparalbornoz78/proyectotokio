@@ -18,9 +18,11 @@ type
     ActionListadoOrdendeCompra: TAction;
     ListadodeOrdendeCompra1: TMenuItem;
     ActionToolBar1: TActionToolBar;
+    Button1: TButton;
     procedure ActionAltaOrdendeCompraExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ActionListadoOrdendeCompraExecute(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
 
   private
     { Private declarations }
@@ -37,7 +39,7 @@ var
 
 implementation
   uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado,
-  seguridad.Unit_FormLogin,seguridad.UsuarioService;
+  seguridad.Unit_FormLogin,seguridad.UsuarioService,Unit_BasedeDatos;
 //    ,seguridad.UsuarioService, seguridad.FormLogin;
 {$R *.dfm}
 
@@ -251,6 +253,16 @@ begin
 end;
 
 
+
+procedure TFormPrincipal.Button1Click(Sender: TObject);
+
+var clave:string;
+begin
+
+ clave:=ConexionDB.XorStr('luque',CODIGOXOR);
+ showmessage(clave);
+
+end;
 
 procedure TFormPrincipal.FormCreate(Sender: TObject);
 begin
