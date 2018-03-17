@@ -19,10 +19,14 @@ type
     ListadodeOrdendeCompra1: TMenuItem;
     ActionToolBar1: TActionToolBar;
     Button1: TButton;
+    ActionAltadeUsuario: TAction;
+    AltadeUsuario1: TMenuItem;
+    AltadeUsuario2: TMenuItem;
     procedure ActionAltaOrdendeCompraExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ActionListadoOrdendeCompraExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure ActionAltadeUsuarioExecute(Sender: TObject);
 
   private
     { Private declarations }
@@ -39,7 +43,8 @@ var
 
 implementation
   uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado,
-  seguridad.Unit_FormLogin,seguridad.UsuarioService,Unit_BasedeDatos;
+  seguridad.Unit_FormLogin,seguridad.UsuarioService,Unit_BasedeDatos,
+  seguridad.FormAltaUsuario;
 //    ,seguridad.UsuarioService, seguridad.FormLogin;
 {$R *.dfm}
 
@@ -276,9 +281,14 @@ begin
 
 end;
 
+procedure TFormPrincipal.ActionAltadeUsuarioExecute(Sender: TObject);
+begin
+  FormAltaUsuario:=TFormAltaUsuario.Create(self);
+  FormAltaUsuario.Show;
+end;
+
 procedure TFormPrincipal.ActionAltaOrdendeCompraExecute(Sender: TObject);
 begin
-  ShowMessage('action ejecutada en formulario');
   FormAltaOrdendeCompra:=TFormAltaOrdendeCompra.create(self);
   FormAltaOrdendeCompra.Show;
 end;

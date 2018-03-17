@@ -74,7 +74,6 @@ type
     function InsertMysql(StrSQL:TStrings):Integer;
     procedure ManejadorErrorTransaccion(E:Exception);
     //function GetConexion:TADOConnection;
-    function XorStr(Stri, Strk: String): String;
     function EjecutarFireDACParamAct(StrSql:string
         ;const Parametros: array of Variant):Integer;overload;
     function RetornarValorStrSqlDeCampo(Field:TField):string;
@@ -93,6 +92,10 @@ type
     procedure DBConectar;
     procedure CerrarConexion;
     procedure EjecutarSelect(StrSql:wideString;DBSource:TComponent);overload;
+
+        function XorStr(Stri, Strk: String): String;
+
+
     function EjecutarSelect(StrSql:wideString;Cerrado:boolean):TDataSet;overload;
     function EjecutarAct(StrSql:widestring):Integer;overload;
     function EjecutarAct(StrSQL:TStrings):Integer;overload;
@@ -101,6 +104,9 @@ type
               ; DataSetDetalle: TDataSet; NombreTablaMaestro: string
               ; NombreTablaDetalle: string;  CampoDetalleFK: string;CampoMaestroPK:string
               ; IdMaestro:integer):integer;
+
+    function EjecutarInsertTabla(DataSetTabla:TDataSet;TablaNombre:string):integer;
+
     function EjecutarInsertMaestroDetalle(DataSetMaestro:TDataSet
         ;DataSetDetalle:TDataSet;NombreTablaMaestro:string;NombreTablaDetalle:string
         ;CampoFK:string):integer;
@@ -365,7 +371,8 @@ begin
   if TipoConexion=FDAC then
     begin
 
-        strxor:=  XorStr(Password,CODIGOXOR);
+        //strxor:=  XorStr(Password,CODIGOXOR);
+        strxor:='luque';
         Conexion:=TFDConnection.Create(nil);
         TFDConnection(Conexion).DriverName:= MySQL;
         with TFDConnection(Conexion).Params do
@@ -943,7 +950,59 @@ begin
 end;
 
 
+function TConexionDB.EjecutarInsertTabla(DataSetTabla:TDataSet;TablaNombre:string):integer;
+var TablaFD:TFDMemTable;
+    DataSetAux:TDataSet;
+    StrSql:string;
+    SqlList:TStringList;
+    I:integer;
+begin
+  SqlList:=TStringList.Create;
 
+  if TipoConexion=FDAC then
+    begin
+      TablaFD:=TFDMemTable(DataSetTabla);
+      if TablaFD.Fields.Count=0 then
+          raise Exception.Create('La tabla notiene campos definidos');
+      with TablaFD do
+        begin
+          StrSql:='INSERT INTO '+TablaNombre+'(';
+
+          StrSql:=StrSql+Fields[0].FieldName;
+
+          for I:=1 to Fields.Count-1 do
+            begin
+              if  (Fields[I].Tag=0) then
+                StrSql:=StrSql+','+Fields[I].FieldName;
+            end;
+          StrSql:=StrSql+')';
+
+          StrSql:=StrSql+' VALUES (';
+         // if Fields[0] then
+
+          StrSql:=StrSql+RetornarValorStrSqlDeCampo(Fields[0]);
+          for I:=1  to Fields.Count-1 do
+            begin
+              if (Fields[I].Tag=0) then
+                begin
+                  StrSql:=StrSql+','+RetornarValorStrSqlDeCampo(Fields[I]);
+                end;
+            end;
+          StrSql:=StrSql+')';
+          SqlList.Add(StrSql);
+          SqlList.Add('SET @idCabecera=LAST_INSERT_ID()');
+
+        end;
+    end;
+  EjecutarAct(SqlList);
+  DataSetAux:=EjecutarSelect('SELECT @idCabecera AS ID',false);
+  //devuelvo el id del registro Maestro insertado
+  Result:=DataSetAux.FieldByName('ID').AsInteger;
+  FreeAndNil(DataSetAux);
+  FreeAndNil(SqlList);
+
+
+end;
 
 function TConexionDB.EjecutarInsertMaestroDetalle(DataSetMaestro:TDataSet
     ;DataSetDetalle:TDataSet;NombreTablaMaestro:string;NombreTablaDetalle:string

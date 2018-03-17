@@ -14,7 +14,8 @@ uses
   Unit_OrdendeCompraAlta in 'Views\OrdendeCompra\Unit_OrdendeCompraAlta.pas' {FormAltaOrdendeCompra},
   views.FormOrdendeCompraListado in 'Views\OrdendeCompra\views.FormOrdendeCompraListado.pas' {FormListadoOrden},
   seguridad.Unit_FormLogin in 'Seguridad\seguridad.Unit_FormLogin.pas' {FormLogin},
-  seguridad.UsuarioService in 'Seguridad\seguridad.UsuarioService.pas';
+  seguridad.UsuarioService in 'Seguridad\seguridad.UsuarioService.pas',
+  seguridad.FormAltaUsuario in 'Seguridad\seguridad.FormAltaUsuario.pas' {FormAltaUsuario};
 
 {$R *.res}
 
