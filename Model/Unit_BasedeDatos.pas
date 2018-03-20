@@ -371,8 +371,7 @@ begin
   if TipoConexion=FDAC then
     begin
 
-        //strxor:=  XorStr(Password,CODIGOXOR);
-        strxor:='luque';
+        strxor:=  XorStr(Password,CODIGOXOR);
         Conexion:=TFDConnection.Create(nil);
         TFDConnection(Conexion).DriverName:= MySQL;
         with TFDConnection(Conexion).Params do
