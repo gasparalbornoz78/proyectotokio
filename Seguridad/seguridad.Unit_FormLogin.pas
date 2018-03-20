@@ -30,6 +30,7 @@ implementation
 uses seguridad.UsuarioService;
 {$R *.dfm}
 
+
 procedure TFormLogin.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if  ModalResult=mrOk then
@@ -38,6 +39,7 @@ begin
           begin
             ModalResult:=mrNone;
             MessageDlg('Usuario o contraseña incorrectos',mtError,[mbOK],0,mbOk);
+            EditNombreUsuario.SetFocus;
           end;
     end
   else

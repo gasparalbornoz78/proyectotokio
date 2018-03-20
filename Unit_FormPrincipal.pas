@@ -108,7 +108,7 @@ begin
 
         if (Control is TMemo) then
             exit;}
-        if (Control is TDBEdit) and (TDBEdit(Control).Tag<>3) then
+        if ((Control is TDBEdit) or (Control is TEdit)) and (TDBEdit(Control).Tag<>3) then
            Msg.wParam:=VK_TAB;
 
 
