@@ -1,16 +1,16 @@
-object FormPrincipal: TFormPrincipal
+object FormConsultaProveedores: TFormConsultaProveedores
   Left = 0
   Top = 0
-  Caption = '  Sistema Tokio'
-  ClientHeight = 465
-  ClientWidth = 691
+  Caption = '  CONSULTA DE PROVEEDORES  '
+  ClientHeight = 467
+  ClientWidth = 678
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIForm
+  FormStyle = fsMDIChild
   Icon.Data = {
     0000010001004040000001002000284200001600000028000000400000008000
     0000010020000000000000420000000000000000000000000000000000000000
@@ -542,101 +542,92 @@ object FormPrincipal: TFormPrincipal
     0000000000FFFE000000000001FFFF000000000003FFFF800000000003FFFFC0
     000000000FFFFFF0000000001FFFFFF8000000003FFFFFFE00000000FFFFFFFF
     00000001FFFFFFFFC0000007FFFFFFFFF800003FFFFFFFFFFF0001FFFFFF}
-  Menu = MenuPrincipal
   OldCreateOrder = False
-  WindowState = wsMaximized
-  OnCreate = FormCreate
+  Visible = True
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
-  object ActionToolBar1: TActionToolBar
+  object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 691
-    Height = 29
-    Caption = 'ActionToolBar1'
-    Color = clMenuBar
-    ColorMap.DisabledFontColor = 7171437
-    ColorMap.HighlightColor = clWhite
-    ColorMap.BtnSelectedFont = clBlack
-    ColorMap.UnusedColor = clWhite
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    Spacing = 0
+    Width = 678
+    Height = 73
+    Align = alTop
+    TabOrder = 0
+    ExplicitLeft = 8
+    object CheckBoxcuit: TCheckBox
+      Left = 15
+      Top = 12
+      Width = 46
+      Height = 17
+      Caption = 'CUIT'
+      TabOrder = 0
+    end
+    object Editcuit: TEdit
+      Left = 83
+      Top = 10
+      Width = 102
+      Height = 21
+      TabOrder = 1
+    end
+    object CheckBoxrazon: TCheckBox
+      Left = 15
+      Top = 37
+      Width = 57
+      Height = 17
+      Caption = 'RAZON'
+      TabOrder = 2
+    end
+    object Editrazon: TEdit
+      Left = 83
+      Top = 35
+      Width = 245
+      Height = 21
+      TabOrder = 3
+    end
+    object Button1: TButton
+      Left = 368
+      Top = 8
+      Width = 75
+      Height = 25
+      Caption = 'Button1'
+      TabOrder = 4
+    end
   end
-  object Button1: TButton
-    Left = 248
-    Top = 336
-    Width = 75
-    Height = 25
-    Caption = 'Alta de Usuario'
+  object Panel2: TPanel
+    Left = 0
+    Top = 440
+    Width = 678
+    Height = 27
+    Align = alBottom
     TabOrder = 1
-    Visible = False
-    OnClick = Button1Click
   end
-  object MenuPrincipal: TMainMenu
-    Left = 272
-    Top = 136
-    object Proveedores1: TMenuItem
-      Caption = 'Proveedores'
-      object ConsultadeProveddores1: TMenuItem
-        Action = ActionConsultaProveedores
-      end
-    end
-    object OrdendeCompra1: TMenuItem
-      Caption = 'Orden de Compra'
-      object AltadeOrdendeCompra1: TMenuItem
-        Action = ActionAltaOrdendeCompra
-      end
-    end
-    object AltadeUsuario1: TMenuItem
-      Caption = 'Usuarios'
-      object AltadeUsuario2: TMenuItem
-        Action = ActionAltadeUsuario
-      end
-      object CosultadeUsuario1: TMenuItem
-        Action = ActionListadodeUsuarios
-      end
-    end
-    object Salir1: TMenuItem
-      Action = ActionSalir
+  object GroupBox1: TGroupBox
+    Left = 0
+    Top = 73
+    Width = 678
+    Height = 367
+    Align = alClient
+    Caption = '  PROVEEDORES  '
+    TabOrder = 2
+    ExplicitTop = 79
+    object DBGrid1: TDBGrid
+      Left = 2
+      Top = 15
+      Width = 674
+      Height = 350
+      Align = alClient
+      DataSource = DSCONSULTA
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
     end
   end
-  object ActionListPrincipal: TActionList
-    Left = 400
-    Top = 136
-    object ActionAltaOrdendeCompra: TAction
-      Category = 'Orden de Compra'
-      Caption = 'Alta de Orden de Compra'
-      OnExecute = ActionAltaOrdendeCompraExecute
-    end
-    object ActionListadoOrdendeCompra: TAction
-      Category = 'Orden de Compra'
-      Caption = 'Listado de Orden de Compra'
-      OnExecute = ActionListadoOrdendeCompraExecute
-    end
-    object ActionAltadeUsuario: TAction
-      Category = 'Usuarios'
-      Caption = 'Alta de Usuario'
-      OnExecute = ActionAltadeUsuarioExecute
-    end
-    object ActionListadodeUsuarios: TAction
-      Category = 'Usuarios'
-      Caption = 'Listado de Usuarios'
-      OnExecute = ActionListadodeUsuariosExecute
-    end
-    object ActionConsultaProveedores: TAction
-      Category = 'Proveedores'
-      Caption = 'Consulta de Proveedores'
-      OnExecute = ActionConsultaProveedoresExecute
-    end
-    object ActionSalir: TAction
-      Caption = 'Salir'
-      Hint = 'Salir del Sistema'
-      OnExecute = ActionSalirExecute
-    end
+  object DSCONSULTA: TDataSource
+    Left = 264
+    Top = 216
   end
 end

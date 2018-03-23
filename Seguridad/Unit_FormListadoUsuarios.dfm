@@ -1,16 +1,16 @@
-object FormPrincipal: TFormPrincipal
+object FormListadoUsuarios: TFormListadoUsuarios
   Left = 0
   Top = 0
-  Caption = '  Sistema Tokio'
-  ClientHeight = 465
-  ClientWidth = 691
+  Caption = 'Listado de Usuarios'
+  ClientHeight = 459
+  ClientWidth = 806
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  FormStyle = fsMDIForm
+  FormStyle = fsMDIChild
   Icon.Data = {
     0000010001004040000001002000284200001600000028000000400000008000
     0000010020000000000000420000000000000000000000000000000000000000
@@ -542,101 +542,100 @@ object FormPrincipal: TFormPrincipal
     0000000000FFFE000000000001FFFF000000000003FFFF800000000003FFFFC0
     000000000FFFFFF0000000001FFFFFF8000000003FFFFFFE00000000FFFFFFFF
     00000001FFFFFFFFC0000007FFFFFFFFF800003FFFFFFFFFFF0001FFFFFF}
-  Menu = MenuPrincipal
   OldCreateOrder = False
-  WindowState = wsMaximized
-  OnCreate = FormCreate
+  Visible = True
+  OnClose = FormClose
   PixelsPerInch = 96
   TextHeight = 13
-  object ActionToolBar1: TActionToolBar
+  object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 691
-    Height = 29
-    Caption = 'ActionToolBar1'
-    Color = clMenuBar
-    ColorMap.DisabledFontColor = 7171437
-    ColorMap.HighlightColor = clWhite
-    ColorMap.BtnSelectedFont = clBlack
-    ColorMap.UnusedColor = clWhite
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clBlack
-    Font.Height = -11
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    Spacing = 0
+    Width = 806
+    Height = 81
+    Align = alTop
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 22
+      Top = 22
+      Width = 28
+      Height = 13
+      Caption = 'Filtro:'
+    end
+    object Editfiltro: TEdit
+      Left = 56
+      Top = 19
+      Width = 231
+      Height = 21
+      TabOrder = 0
+    end
+    object ButtonBuscar: TButton
+      Left = 293
+      Top = 17
+      Width = 100
+      Height = 25
+      Action = ActionBuscarUsuario
+      TabOrder = 1
+    end
   end
-  object Button1: TButton
-    Left = 248
-    Top = 336
-    Width = 75
-    Height = 25
-    Caption = 'Alta de Usuario'
+  object TPanel
+    Left = 0
+    Top = 380
+    Width = 806
+    Height = 79
+    Align = alBottom
     TabOrder = 1
-    Visible = False
-    OnClick = Button1Click
   end
-  object MenuPrincipal: TMainMenu
-    Left = 272
-    Top = 136
-    object Proveedores1: TMenuItem
-      Caption = 'Proveedores'
-      object ConsultadeProveddores1: TMenuItem
-        Action = ActionConsultaProveedores
-      end
-    end
-    object OrdendeCompra1: TMenuItem
-      Caption = 'Orden de Compra'
-      object AltadeOrdendeCompra1: TMenuItem
-        Action = ActionAltaOrdendeCompra
-      end
-    end
-    object AltadeUsuario1: TMenuItem
-      Caption = 'Usuarios'
-      object AltadeUsuario2: TMenuItem
-        Action = ActionAltadeUsuario
-      end
-      object CosultadeUsuario1: TMenuItem
-        Action = ActionListadodeUsuarios
-      end
-    end
-    object Salir1: TMenuItem
-      Action = ActionSalir
+  object GroupBox1: TGroupBox
+    Left = 0
+    Top = 81
+    Width = 806
+    Height = 299
+    Align = alClient
+    Caption = ' USUARIOS'
+    TabOrder = 2
+    object gridusuarios: TDBGrid
+      Left = 2
+      Top = 15
+      Width = 802
+      Height = 282
+      Align = alClient
+      DataSource = DSusuarios
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+      Columns = <
+        item
+          Expanded = False
+          FieldName = 'idusuario'
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'nombre'
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'nombrecompleto'
+          Visible = True
+        end>
     end
   end
-  object ActionListPrincipal: TActionList
-    Left = 400
-    Top = 136
-    object ActionAltaOrdendeCompra: TAction
-      Category = 'Orden de Compra'
-      Caption = 'Alta de Orden de Compra'
-      OnExecute = ActionAltaOrdendeCompraExecute
-    end
-    object ActionListadoOrdendeCompra: TAction
-      Category = 'Orden de Compra'
-      Caption = 'Listado de Orden de Compra'
-      OnExecute = ActionListadoOrdendeCompraExecute
-    end
-    object ActionAltadeUsuario: TAction
-      Category = 'Usuarios'
-      Caption = 'Alta de Usuario'
-      OnExecute = ActionAltadeUsuarioExecute
-    end
-    object ActionListadodeUsuarios: TAction
-      Category = 'Usuarios'
-      Caption = 'Listado de Usuarios'
-      OnExecute = ActionListadodeUsuariosExecute
-    end
-    object ActionConsultaProveedores: TAction
-      Category = 'Proveedores'
-      Caption = 'Consulta de Proveedores'
-      OnExecute = ActionConsultaProveedoresExecute
-    end
-    object ActionSalir: TAction
-      Caption = 'Salir'
-      Hint = 'Salir del Sistema'
-      OnExecute = ActionSalirExecute
+  object DSusuarios: TDataSource
+    Left = 208
+    Top = 216
+  end
+  object ActionList1: TActionList
+    Left = 568
+    Top = 32
+    object ActionBuscarUsuario: TAction
+      Caption = 'Buscar Usuario'
+      Hint = 'Buscar Usuario'
+      OnExecute = ActionBuscarUsuarioExecute
     end
   end
 end

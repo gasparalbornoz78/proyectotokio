@@ -16,17 +16,26 @@ type
     ActionListPrincipal: TActionList;
     ActionAltaOrdendeCompra: TAction;
     ActionListadoOrdendeCompra: TAction;
-    ListadodeOrdendeCompra1: TMenuItem;
     ActionToolBar1: TActionToolBar;
     Button1: TButton;
     ActionAltadeUsuario: TAction;
     AltadeUsuario1: TMenuItem;
     AltadeUsuario2: TMenuItem;
+    CosultadeUsuario1: TMenuItem;
+    ActionListadodeUsuarios: TAction;
+    Proveedores1: TMenuItem;
+    ConsultadeProveddores1: TMenuItem;
+    Salir1: TMenuItem;
+    ActionConsultaProveedores: TAction;
+    ActionSalir: TAction;
     procedure ActionAltaOrdendeCompraExecute(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ActionListadoOrdendeCompraExecute(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure ActionAltadeUsuarioExecute(Sender: TObject);
+    procedure ActionListadodeUsuariosExecute(Sender: TObject);
+    procedure ActionSalirExecute(Sender: TObject);
+    procedure ActionConsultaProveedoresExecute(Sender: TObject);
 
   private
     { Private declarations }
@@ -44,15 +53,27 @@ var
 implementation
   uses Unit_OrdendeCompraAlta, views.FormOrdendeCompraListado,
   seguridad.Unit_FormLogin,seguridad.UsuarioService,Unit_BasedeDatos,
-  seguridad.FormAltaUsuario;
+  seguridad.FormAltaUsuario, Unit_FormListadoUsuarios,
+  Unit_FormConsultaProveedores;
 //    ,seguridad.UsuarioService, seguridad.FormLogin;
 {$R *.dfm}
+
+procedure TFormPrincipal.ActionListadodeUsuariosExecute(Sender: TObject);
+begin
+  FormListadoUsuarios:=TFormListadoUsuarios.Create(self);
+  FormListadoUsuarios.Show;
+end;
 
 procedure TFormPrincipal.ActionListadoOrdendeCompraExecute(Sender: TObject);
 begin
   FormListadoOrden:=TFormListadoOrden.Create(self);
   FormListadoOrden.Show;
 
+end;
+
+procedure TFormPrincipal.ActionSalirExecute(Sender: TObject);
+begin
+  CLOSE;
 end;
 
 procedure TFormPrincipal.AppException(Sender:TObject;E:Exception);
@@ -276,7 +297,7 @@ begin
   Application.OnActionExecute:=AppActionExecute;
   FormLogin:=TFormLogin.Create(self);
   FormLogin.ShowModal;
-  UsuarioService.AutorizarAcciones(ActionListPrincipal);
+  //UsuarioService.AutorizarAcciones(ActionListPrincipal);
 
 
 end;
@@ -291,6 +312,13 @@ procedure TFormPrincipal.ActionAltaOrdendeCompraExecute(Sender: TObject);
 begin
   FormAltaOrdendeCompra:=TFormAltaOrdendeCompra.create(self);
   FormAltaOrdendeCompra.Show;
+end;
+
+procedure TFormPrincipal.ActionConsultaProveedoresExecute(Sender: TObject);
+begin
+  FormConsultaProveedores:=TFormConsultaProveedores.Create(self);
+  FormConsultaProveedores.Show;
+
 end;
 
 end.
